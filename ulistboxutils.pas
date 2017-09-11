@@ -84,7 +84,7 @@ end;
 
 function TListBoxUtils.GetSelectedItems(LB: TCustomListBox): TIntegerDynArray;
 var
-  i, j: Integer;
+  i,j: Integer;
 begin
   SetLength(Result, LB.SelCount);
   j := 0;
@@ -131,7 +131,7 @@ var
   TheItems: TIntegerDynArray;
   Checks: TIntegerDynArray;
   OnCheck: TNotifyEvent;
-  i, j, Cnt: Integer;
+  i,j,Cnt: Integer;
 begin
   with LB do
   begin
@@ -220,7 +220,7 @@ end;
 procedure TListBoxUtils.MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  FDragStartPoint := Point(X, Y);
+  FDragStartPoint := Point(X,Y);
 end;
 
 procedure TListBoxUtils.KeyDown(Sender: TObject; var Key: Word;
@@ -378,7 +378,7 @@ begin
           sl[i] := Integer(Ord(State[i])).ToString + ASep + sl[i];
         Result := sl.CommaText;
       finally
-        if Assigned(sl) then sl.Free;
+        sl.Free;
       end;
     end;
     Exit;
