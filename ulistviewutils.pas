@@ -88,7 +88,7 @@ end;
 
 function TListViewUtils.GetSelectedItems(LV: TListView): TListItemDynArray;
 var
-  i, j: Integer;
+  i,j: Integer;
 begin
   SetLength(Result, LV.SelCount);
   j := 0;
@@ -151,7 +151,6 @@ begin
     for i := 0 to High(TheItems) do
       Items.Delete(Items.FindCaption(0, PH, False, True, False).Index);
     SelectItems(TheItems);
-    SetFocus;
   end;
 end;
 
@@ -179,6 +178,7 @@ begin
       BeginUpdate;
       try
         MoveItems(LV, Dest.Index);
+        SetFocus;
       finally
         EndUpdate;
       end;
@@ -195,7 +195,7 @@ end;
 procedure TListViewUtils.MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  FDragStartPoint := Point(X, Y);
+  FDragStartPoint := Point(X,Y);
   {$ifdef LINUX}
     if not Assigned((Sender as TListView).GetItemAt(X, Y)) then
       (Sender as TListView).ClearSelection;
@@ -357,7 +357,7 @@ end;
 function TListViewUtils.GetItems(LV: TListView; const ASep: Char): String;
 var
   sl : TStringList;
-  i, j: Integer;
+  i,j: Integer;
 begin
   Result := EmptyStr;
   if ASep in [#0..#32] then Exit;
@@ -378,7 +378,7 @@ begin
       end;
       Result := sl.CommaText;
     finally
-      if Assigned(sl) then sl.Free;
+      sl.Free;
     end;
   end;
 end;
@@ -389,7 +389,7 @@ var
   OnCheck: TLVCheckedItemEvent;
   sl: TStringList;
   sa: TStringArray;
-  i, j: Integer;
+  i,j: Integer;
 begin
   if ASettings = EmptyStr then Exit;
   if ASep in [#0..#32] then Exit;
@@ -415,7 +415,7 @@ begin
     finally
       EndUpdate;
       OnItemChecked := OnCheck;
-      if Assigned(sl) then sl.Free;
+      sl.Free;
     end;
   end;
 end;
@@ -423,7 +423,7 @@ end;
 function TListViewUtils.GetItems(LV: TListView): TStringArray;
 var
   sl : TStringList;
-  i, j: Integer;
+  i,j: Integer;
 begin
   sl := TStringList.Create;
   try
@@ -442,7 +442,7 @@ begin
       end;
     end;
   finally
-    if Assigned(sl) then sl.Free;
+    sl.Free;
   end;
 end;
 
@@ -451,7 +451,7 @@ procedure TListViewUtils.SetItems(LV: TListView;
 var
   OnCheck: TLVCheckedItemEvent;
   sl: TStringList;
-  i, j: Integer;
+  i,j: Integer;
 begin
   if Length(ASettings) = 0 then Exit;
   with LV do
@@ -475,7 +475,7 @@ begin
     finally
       EndUpdate;
       OnItemChecked := OnCheck;
-      if Assigned(sl) then sl.Free;
+      sl.Free;
     end;
   end;
 end;
