@@ -50,8 +50,8 @@ end;
 
 ## uTimeCode.pas
 A TimeCode and TimeCode List parser.
-it can parse a TimeCode string written in twelve forms like hh:mm:ss.ms or or m:s.ms or ss.ms etc.
-there is ability to initialize TTimeCode with different separators like hh:mm:ss;ms.
+it can parse a TimeCode string written in twelve forms like `HH:MM:SS.ms` or `M:S.ms` or `SS.ms` etc.
+there is ability to initialize TTimeCode with different separators like HH:MM:SS;ms.
 you can also control precision of the milliseconds part. like 1 or 10 etc.
 an example from BitHesab console project:
 ```pascal
@@ -86,7 +86,7 @@ end;
 
 ## uTimeSlice.pas
 A TimeSlice and TimeSlice List parser based on uTimeCode unit.
-Here 00:00:00.000-00:00:00.001 is considered a valid slice of the time (a TimeSlice).
+Here `00:00:00.000-00:00:00.001` is considered a valid slice of the time (a TimeSlice).
 with a start and an ending TimeCode. when (start >= 0) and (end > start).
 an example function from one private project is:
 ```pascal
