@@ -84,7 +84,7 @@ begin
 end;
 ```
 
-##uTimeCodeEdit.pas
+## uTimeCodeEdit.pas
 A dialog form to work with uTimeCode unit.
 an example function from one private project is:
 
