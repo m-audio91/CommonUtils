@@ -209,7 +209,7 @@ begin
     Parent := ContactBox;
     Font.Color := clBlue;
     Caption := 'http://www.google.com';
-	//set positioning and spacing properties here
+    //set positioning and spacing properties here
   end;
 end;  
 ```
