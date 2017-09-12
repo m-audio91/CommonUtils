@@ -84,6 +84,30 @@ begin
 end;
 ```
 
+##uTimeCodeEdit.pas
+A dialog form to work with uTimeCode unit.
+an example function from one private project is:
+
+```pascal
+uses
+..., uTimeCodeEdit;
+
+...
+
+procedure TFFTimeCodeListFilter.ItemNew(Sender: TObject);
+var
+  tce: TTimeCodeEdit;
+begin
+  tce := TTimeCodeEdit.CreateNew(nil); //notice *CreateNew* constructor.
+  try
+    if tce.ShowModal = mrOk then
+      FList.Items.Add(tce.Value);
+  finally
+    tce.Free;
+  end;
+end;  
+```
+
 ## uTimeSlice.pas
 A TimeSlice and TimeSlice List parser based on uTimeCode unit.
 Here `00:00:00.000-00:00:00.001` is considered a valid slice of the time (a TimeSlice).
