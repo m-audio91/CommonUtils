@@ -189,3 +189,27 @@ begin
   end;
 end; 
 ```
+
+## uUrlLabel.pas
+A simple TLabel which opens it's Caption in systems default browser on click  
+usage example:
+```pascal
+uses
+..., uUrlLabel;
+
+...
+
+procedure TSBAbout.FormCreate(Sender: TObject);
+var
+  AUrl: TUrlLabel;
+begin
+  AUrl := TUrlLabel.Create(Self);
+  with AUrl do
+  begin
+    Parent := ContactBox;
+    Font.Color := clBlue;
+    Caption := 'http://www.google.com';
+	//set positioning and spacing properties here
+  end;
+end;  
+```
