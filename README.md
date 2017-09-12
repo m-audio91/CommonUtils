@@ -84,7 +84,7 @@ begin
 end;
 ```
 
-## uTimeSlice.pas
+## uTimeSlice.pas 
 A TimeSlice and TimeSlice List parser based on uTimeCode unit.
 Here `00:00:00.000-00:00:00.001` is considered a valid slice of the time (a TimeSlice).
 with a start and an ending TimeCode. when (start >= 0) and (end > start).
