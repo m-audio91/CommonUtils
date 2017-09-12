@@ -1,5 +1,5 @@
 unit uUrlLabel;
-{ A simple TLabel which opens it Caption in systems default browser on click>
+{ A simple TLabel which opens it's Caption in systems default browser on click
 
   Copyright (C) 2017 Mohammadreza Bahrami m.audio91@gmail.com
 
