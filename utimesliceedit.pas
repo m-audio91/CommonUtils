@@ -87,7 +87,7 @@ implementation
 
 procedure TTimeSliceEdit.OnShowing(Sender: TObject);
 var
-  h: Integer;
+  w,h: Integer;
 begin
   //FInputs1: TPanel;
   FInputs1 := TPanel.Create(Self);
@@ -113,6 +113,7 @@ begin
     MaxValue := 59;
     Alignment := taCenter;
     Increment := 1;
+    Constraints.MinWidth := Trunc(Width*1.5);
     Value := FValue.Value.StartPos.Value.H;
   end;
 
@@ -134,6 +135,7 @@ begin
     MaxValue := 59;
     Alignment := taCenter;
     Increment := 1;
+    Constraints.MinWidth := Trunc(Width*1.5);
     Value := FValue.Value.StartPos.Value.M;
   end;
 
@@ -155,6 +157,7 @@ begin
     MaxValue := 59;
     Alignment := taCenter;
     Increment := 1;
+    Constraints.MinWidth := Trunc(Width*1.5);
     Value := FValue.Value.StartPos.Value.S;
   end;
 
@@ -176,6 +179,7 @@ begin
     MaxValue := 999;
     Alignment := taCenter;
     Increment := 1;
+    Constraints.MinWidth := Width*2;
     Value := FValue.Value.StartPos.ValueAsArray[3];
   end;
 
@@ -212,6 +216,7 @@ begin
     MaxValue := 59;
     Alignment := taCenter;
     Increment := 1;
+    Constraints.MinWidth := Trunc(Width*1.5);
     Value := FValue.Value.EndPos.Value.H;
   end;
 
@@ -233,6 +238,7 @@ begin
     MaxValue := 59;
     Alignment := taCenter;
     Increment := 1;
+    Constraints.MinWidth := Trunc(Width*1.5);
     Value := FValue.Value.EndPos.Value.M;
   end;
 
@@ -254,6 +260,7 @@ begin
     MaxValue := 59;
     Alignment := taCenter;
     Increment := 1;
+    Constraints.MinWidth := Trunc(Width*1.5);
     Value := FValue.Value.EndPos.Value.S;
   end;
 
@@ -275,6 +282,7 @@ begin
     MaxValue := 999;
     Alignment := taCenter;
     Increment := 1;
+    Constraints.MinWidth := Width*2;
     Value := FValue.Value.EndPos.ValueAsArray[3];
   end;
 
@@ -326,8 +334,11 @@ begin
   FOk.Left := FCancel.Left+FCancel.Width;
 
   AutoSize := True;
+  w := Width;
   h := Height;
   AutoSize := False;
+  Width := w;
+  Constraints.MinWidth := w;
   Height := h;
   Constraints.MinHeight := h;
 end;
