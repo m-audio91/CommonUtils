@@ -34,10 +34,13 @@ unit CommonGUIUtils;
 interface
 
 uses
-  Classes, SysUtils, Forms, LCLType;
+  Classes, SysUtils, Forms, LCLType, Graphics, Controls, IntfGraphics,
+  LazCanvas, extinterpolation, FPImage;
 
 procedure ShowError(const AMsg, ATitle: String);
 function ShowWarnYN(const AMsg, ATitle: String): boolean;
+procedure CopyImageList(AImgList: TImageList; ASourceImageList: TImageList;
+  ADPI, ASourceDPI: Word; AMaskColor: TColor);
 
 implementation
 
@@ -51,6 +54,88 @@ function ShowWarnYN(const AMsg, ATitle: String): boolean;
 begin
   with Application do
     Result := MessageBox(PChar(AMsg), PChar(ATitle), MB_YESNO + MB_ICONWARNING) = IDYES;
+end;
+
+procedure CopyImageList(AImgList: TImageList; ASourceImageList: TImageList;
+  ADPI, ASourceDPI: Word; AMaskColor: TColor);
+
+  procedure ClearBitmap(ABitmap: TBitmap; AW, AH: Integer);
+  begin
+    ABitmap.Width := 0;
+    ABitmap.Height := 0;
+    ABitmap.Width := AW;
+    ABitmap.Height := AH;
+  end;
+
+var
+  IntfImg, ResizedIntfImg: TLazIntfImage;
+  Canv: TLazCanvas;
+  Bmp, ResizedBmp, TempBmp: TBitmap;
+  w,h,i: Integer;
+begin
+  if not Assigned(AImgList) then Exit;
+  if not Assigned(ASourceImageList) then Exit;
+  if ASourceImageList.Count < 1 then Exit;
+  if ADPI = ASourceDPI then
+  begin
+    AImgList.Clear;
+    AImgList.Width := ASourceImageList.Width;
+    AImgList.Height := ASourceImageList.Height;
+    AImgList.AddImages(ASourceImageList);
+    Exit;
+  end;
+
+  w := Round((ADPI / ASourceDPI) * ASourceImageList.Width);
+  h := Round((ADPI / ASourceDPI) * ASourceImageList.Height);
+  AImgList.Clear;
+  AImgList.Width := w;
+  AImgList.Height := h;
+
+  Bmp := TBitmap.Create;
+  TempBmp := TBitmap.Create;
+  TempBmp.Canvas.Brush.Color := AMaskColor;
+  ResizedBmp := TBitmap.Create;
+  IntfImg := TLazIntfImage.Create(0, 0);
+  ResizedIntfImg := TLazIntfImage.Create(0, 0);
+  Canv := TLazCanvas.Create(ResizedIntfImg);
+  Canv.Interpolation := TLanczosInterpolation.Create;
+
+  Bmp.PixelFormat := {$IFDEF WINDOWS}pf32Bit{$ELSE}pf24Bit{$ENDIF};
+  ResizedBmp.PixelFormat := {$IFDEF WINDOWS}pf32Bit{$ELSE}pf24Bit{$ENDIF};
+  TempBmp.PixelFormat := {$IFDEF WINDOWS}pf32Bit{$ELSE}pf24Bit{$ENDIF};
+
+  for i := 0 to ASourceImageList.Count-1 do
+  begin
+    ResizedBmp.Transparent := False;
+    ClearBitmap(ResizedBmp, w, h);
+    ClearBitmap(Bmp, ASourceImageList.Width, ASourceImageList.Height);
+    ASourceImageList.GetBitmap(i, Bmp);
+    ResizedIntfImg.LoadFromBitmap(ResizedBmp.Handle, 0);
+    {$IFDEF WINDOWS}
+    IntfImg.LoadFromBitmap(Bmp.Handle, 0);
+    Canv.StretchDraw(0, 0, w, h, IntfImg);
+    ResizedBmp.LoadFromIntfImage(ResizedIntfImg);
+    {$ELSE}
+    ClearBitmap(TempBmp, ASourceImageList.Width, ASourceImageList.Height);
+    TempBmp.Canvas.FillRect(Rect(0,0,TempBmp.Width,TempBmp.Height));
+    TempBmp.Canvas.Draw(0,0,Bmp);
+
+    IntfImg.LoadFromBitmap(TempBmp.Handle, 0);
+    Canv.StretchDraw(0, 0, w, h, IntfImg);
+    ResizedBmp.LoadFromIntfImage(ResizedIntfImg);
+
+    ResizedBmp.TransparentColor := AMaskColor;
+    ResizedBmp.Transparent := True;
+    {$ENDIF}
+    AImgList.Add(ResizedBmp, nil);
+  end;
+  Bmp.Free;
+  TempBmp.Free;
+  ResizedBmp.Free;
+  Canv.Interpolation.Free;
+  Canv.Free;
+  IntfImg.Free;
+  ResizedIntfImg.Free;
 end;
 
 end.
