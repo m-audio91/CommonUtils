@@ -66,6 +66,7 @@ procedure DeleteAllOccurrences(const SubStr: String; var Source: String;
   const CensorMask: String = '');
 procedure DeleteAllOccurrencesVL(const SubStrStart, SubStrEnd: String;
   var Source: String; IncludeEnd: Boolean = True; const CensorMask: String = '');
+function ReplaceStrings(const S: String; Old, New: array of String): String;
 
 implementation
 
@@ -348,6 +349,18 @@ begin
         Source := Source.Insert(i, CensorMask);
     end;
   until i < 0;
+end;
+
+function ReplaceStrings(const S: String; Old, New: array of String): String;
+var
+  Flags: TReplaceFlags;
+  i: Integer;
+begin
+  Result := S;
+  Flags := [rfReplaceAll,rfIgnoreCase];
+  if High(Old) <> High(New) then Exit;
+  for i := Low(Old) to High(Old) do
+    Result := Result.Replace(Old[i], New[i], Flags);
 end;
 
 end.
