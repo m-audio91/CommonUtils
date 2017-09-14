@@ -62,6 +62,10 @@ function StringListToArray(var SL: TStringList): TStringArray;
 procedure ArrayToStringList(var AArray: TStringArray; var SL: TStringList);
 function FindInArray(var AArray: TStringArray; AText: String; AStartIndex:
   Integer = 0): Integer;
+procedure DeleteAllOccurrences(const SubStr: String; var Source: String;
+  const CensorMask: String = '');
+procedure DeleteAllOccurrencesVL(const SubStrStart, SubStrEnd: String;
+  var Source: String; IncludeEnd: Boolean = True; const CensorMask: String = '');
 
 implementation
 
@@ -315,6 +319,35 @@ begin
       Result := i;
       Break;
     end;
+end;
+
+procedure DeleteAllOccurrences(const SubStr: String; var Source: String;
+  const CensorMask: String);
+begin
+  Source := Source.Replace(SubStr, CensorMask);
+end;
+
+procedure DeleteAllOccurrencesVL(const SubStrStart, SubStrEnd: String;
+  var Source: String; IncludeEnd: Boolean; const CensorMask: String);
+var
+  i,j,k: Integer;
+begin
+  j := 0;
+  repeat
+    i := Source.IndexOf(SubStrStart, j);
+    if i < 0 then Break;
+    j := i;
+    k := Source.IndexOf(SubStrEnd, i);
+    if k >= 0 then
+    begin
+      k := k - j;
+      if IncludeEnd then
+        k := k + SubStrEnd.Length;
+      Source := Source.Remove(i, k);
+      if not IsEmptyStr(CensorMask) then
+        Source := Source.Insert(i, CensorMask);
+    end;
+  until i < 0;
 end;
 
 end.
