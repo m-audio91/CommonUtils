@@ -38,17 +38,81 @@ uses
 
 type
 
-  { TUrlLabel }
+  { TCustomUrlLabel }
 
-  TUrlLabel = class(TLabel)
+  TCustomUrlLabel = class(TLabel)
+  private
+    FLastColor: TColor;
+    FHighlightColor: TColor;
+    FUseHighlightColor: Boolean;
+    procedure SetHighlightColor(AValue: TColor);
   public
-    procedure Click; override;
+    property HighlightColor: TColor read FHighlightColor write SetHighlightColor;
     procedure MouseEnter; override;
     procedure MouseLeave; override;
-    constructor Create(TheAOwner: TComponent); override;
+    constructor Create(TheOwner: TComponent); override;
+  end;
+
+  { TUrlLabel }
+
+  TUrlLabel = class(TCustomUrlLabel)
+  public
+    procedure Click; override;
+  end;
+
+  { TUrlLabelEx }
+
+  TUrlLabelEx = class(TCustomUrlLabel)
+  private
+    FUrl: String;
+  public
+    property URL: String read FUrl write FUrl;
+    procedure Click; override;
+    constructor Create(TheOwner: TComponent); override;
   end;
 
 implementation
+
+{ TCustomUrlLabel }
+
+procedure TCustomUrlLabel.SetHighlightColor(AValue: TColor);
+begin
+  FUseHighlightColor := False;
+  if AValue = Font.Color then Exit;
+  FHighlightColor := AValue;
+  FUseHighlightColor := True;
+end;
+
+procedure TCustomUrlLabel.MouseEnter;
+begin
+  Inherited MouseEnter;
+  if FUseHighlightColor then
+  begin
+    FLastColor := Font.Color;
+    Font.Color := FHighlightColor;
+  end
+  else
+    Font.Style := Font.Style+[fsUnderline];
+  Cursor := crHandPoint;
+end;
+
+procedure TCustomUrlLabel.MouseLeave;
+begin
+  inherited MouseLeave;
+  if FUseHighlightColor then
+    Font.Color := FLastColor
+  else
+    Font.Style := Font.Style-[fsUnderline];
+  Cursor := crDefault;
+end;
+
+constructor TCustomUrlLabel.Create(TheOwner: TComponent);
+begin
+  inherited Create(TheOwner);
+  ParentBidiMode := False;
+  BiDiMode := bdLeftToRight;
+  FUseHighlightColor := False;
+end;
 
 { TUrlLabel }
 
@@ -59,25 +123,19 @@ begin
     OpenURL(Caption);
 end;
 
-procedure TUrlLabel.MouseEnter;
+{ TUrlLabelEx }
+
+procedure TUrlLabelEx.Click;
 begin
-  Inherited MouseEnter;
-  Font.Style := Font.Style+[fsUnderline];
-  Cursor := crHandPoint;
+  inherited Click;
+  if FUrl <> EmptyStr then
+    OpenURL(FUrl);
 end;
 
-procedure TUrlLabel.MouseLeave;
+constructor TUrlLabelEx.Create(TheOwner: TComponent);
 begin
-  inherited MouseLeave;
-  Font.Style := Font.Style-[fsUnderline];
-  Cursor := crDefault;
-end;
-
-constructor TUrlLabel.Create(TheAOwner: TComponent);
-begin
-  inherited Create(TheAOwner);
-  ParentBidiMode := False;
-  BiDiMode := bdLeftToRight;
+  inherited Create(TheOwner);
+  FUrl := EmptyStr;
 end;
 
 end.
