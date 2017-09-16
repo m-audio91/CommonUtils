@@ -103,7 +103,7 @@ procedure TFFTimeCodeListFilter.ItemNew(Sender: TObject);
 var
   tce: TTimeCodeEdit;
 begin
-  tce := TTimeCodeEdit.CreateNew(nil); //notice *CreateNew* constructor.
+  tce := TTimeCodeEdit.Create(nil);
   try
     if tce.ShowModal = mrOk then
       FList.Items.Add(tce.Value);
@@ -232,5 +232,5 @@ begin
   end;
 end;  
 ```
-An extended version that has a property called URL is also included. see [FaSubrip](https://github.com/m-audio91/FaSubrip/blob/master/umain.pas) for example.
+An extended version that has a property called URL is also included. see [FaSubrip](https://github.com/m-audio91/FaSubrip/blob/master/umain.pas) FormCreate for example.
 
