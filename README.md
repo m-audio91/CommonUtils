@@ -1,7 +1,8 @@
 # CommonUtils
 last Free Pascal version used to compile was 3.1.1 trunk r37023  
 last Lazarus version used to compile was 1.9 trunk r55735  
-may not work on older release versions.
+may not work on older release versions.  
+all units in this repository are independent from outside. but may require each other. for example uTimeCodeEdit requires uFreeEditor.
 
 ## CommonFileUtils.pas
 Common routines to work with files.
