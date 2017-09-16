@@ -35,12 +35,12 @@ interface
 
 uses
   Classes, SysUtils, GraphType, Graphics, Forms, Controls, StdCtrls,
-  ExtCtrls, Spin, uTimeCode, uTimeSlice;
+  ExtCtrls, Spin, uFreeEditor, uTimeCode, uTimeSlice;
 
 type
 { TTimeSliceEditEx }
 
-  TTimeSliceEditEx = class(TForm)
+  TTimeSliceEditEx = class(TFreeEditor)
   private
     FValue: TTimeSlice;
     FInputs1: TPanel;
@@ -64,10 +64,7 @@ type
     FInputs3: TPanel;
     FDelay: TFloatSpinEdit;
     Title3: TLabel;
-    FActions: TPanel;
-    FOk: TButton;
-    FCancel: TButton;
-    procedure OnShowing(Sender: TObject);
+    procedure LoadControls(Sender: TObject);
     procedure OnClosing(Sender: TObject; var CanClose: Boolean);
     function GetValue: String;
     procedure SetValue(const AValue: String);
@@ -78,8 +75,6 @@ type
 
 resourcestring
   rsTimeSliceEditorEx = 'ویرایشگر زمانبندی';
-  rsTSEXOK = 'تایید';
-  rsTSEXCancel = 'صرف نظر';
   rsTSEXStart = 'شروع';
   rsTSEXEnd = 'پایان';
   rsTSEXDelay = '+تاخیر -تعجیل';
@@ -92,9 +87,7 @@ implementation
 
 { TFreeEditor }
 
-procedure TTimeSliceEditEx.OnShowing(Sender: TObject);
-var
-  w,h: Integer;
+procedure TTimeSliceEditEx.LoadControls(Sender: TObject);
 begin
   //FInputs1: TPanel;
   FInputs1 := TPanel.Create(Self);
@@ -351,53 +344,6 @@ begin
     Caption := rsTSEXDelay;
     Layout := tlBottom;
   end;
-
-  //FActions
-  FActions := TPanel.Create(Self);
-  with FActions do
-  begin
-    Parent := Self;
-    Caption := EmptyStr;
-    BevelOuter := bvNone;
-    AutoSize := True;
-    BorderSpacing.Top := 8;
-    Color := clForm;
-  end;
-
-  //FOk
-  FOk := TButton.Create(Self);
-  with FOk do
-  begin
-    Parent := FActions;
-    Align := alRight;
-    Caption := rsTSEXOK;
-    AutoSize := True;
-    Default := True;
-    ModalResult := mrOk;
-  end;
-
-  //FCancel
-  FCancel := TButton.Create(Self);
-  with FCancel do
-  begin
-    Parent := FActions;
-    Align := alRight;
-    Left := 0;
-    Caption := rsTSEXCancel;
-    AutoSize := True;
-    Cancel := True;
-    ModalResult := mrCancel;
-  end;
-  FOk.Left := FCancel.Left+FCancel.Width;
-
-  AutoSize := True;
-  w := Width;
-  h := Height;
-  AutoSize := False;
-  Width := w;
-  Constraints.MinWidth := w;
-  Height := h;
-  Constraints.MinHeight := h;
 end;
 
 procedure TTimeSliceEditEx.OnClosing(Sender: TObject; var CanClose: Boolean);
@@ -438,18 +384,8 @@ constructor TTimeSliceEditEx.CreateNew(AOwner: TComponent; Num: Integer);
 begin
   //Self
   inherited CreateNew(AOwner, Num);
-  if AOwner is TForm then
-    Position := poOwnerFormCenter
-  else
-      Position := poScreenCenter;
   Caption := rsTimeSliceEditorEx;
-  ChildSizing.Layout := cclLeftToRightThenTopToBottom;
-  ChildSizing.EnlargeHorizontal := crsHomogenousChildResize;
-  ChildSizing.ShrinkHorizontal := crsHomogenousChildResize;
-  ChildSizing.ControlsPerLine := 1;
-  ChildSizing.LeftRightSpacing := 8;
-  ChildSizing.TopBottomSpacing := 8;
-  OnShow := @OnShowing;
+  OnShow := @LoadControls;
   OnCloseQuery := @OnClosing;
 
   FValue := Default(TTimeSlice);
