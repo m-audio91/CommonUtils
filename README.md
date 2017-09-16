@@ -180,7 +180,7 @@ procedure TSBMain.AddTimeSliceClick(Sender: TObject);
 var
   tse: TTimeSliceEditEx;
 begin
-  tse := TTimeSliceEditEx.CreateNew(Self); //notice *CreateNew* constructor.
+  tse := TTimeSliceEditEx.Create(Self);
   try
     tse.ShowModal;
     if tse.ModalResult = mrOk then
@@ -194,7 +194,7 @@ procedure TSBMain.EditTimeSliceClick(Sender: TObject);
 var
   tse: TTimeSliceEditEx;
 begin
-  tse := TTimeSliceEditEx.CreateNew(Self);
+  tse := TTimeSliceEditEx.Create(Self);
   try
     if TimeSlicesList.ItemIndex >= 0 then
     begin
@@ -210,7 +210,7 @@ end;
 ```
 
 ## uUrlLabel.pas
-A simple TLabel which opens it's Caption in systems default browser on click  
+A simple TLabel which opens it's Caption in systems default browser on click.  
 usage example:
 ```pascal
 uses
@@ -232,3 +232,5 @@ begin
   end;
 end;  
 ```
+An extended version that has a property called URL is also included. see [FaSubrip](https://github.com/m-audio91/FaSubrip/blob/master/umain.pas) for example.
+
