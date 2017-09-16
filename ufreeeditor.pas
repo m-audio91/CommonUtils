@@ -53,6 +53,7 @@ type
     procedure LoadDefaultControls;
     procedure UpdateFormSize;
   public
+    constructor Create(AOwner: TComponent); override;
     constructor CreateNew(AOwner: TComponent; Num: Integer = 0); override;
   end;
 
@@ -124,6 +125,11 @@ begin
   Constraints.MinWidth := w;
   Height := h;
   Constraints.MinHeight := h;
+end;
+
+constructor TFreeEditor.Create(AOwner: TComponent);
+begin
+  CreateNew(AOwner, 0);
 end;
 
 constructor TFreeEditor.CreateNew(AOwner: TComponent; Num: Integer);
