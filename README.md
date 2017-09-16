@@ -188,6 +188,24 @@ begin
   finally
     tse.Free;
   end;
+end;
+
+procedure TSBMain.EditTimeSliceClick(Sender: TObject);
+var
+  tse: TTimeSliceEditEx;
+begin
+  tse := TTimeSliceEditEx.CreateNew(Self);
+  try
+    if TimeSlicesList.ItemIndex >= 0 then
+    begin
+      tse.Value := TimeSlicesList.Items[TimeSlicesList.ItemIndex];
+      tse.ShowModal;
+      if tse.ModalResult = mrOk then
+        TimeSlicesList.Items[TimeSlicesList.ItemIndex] := tse.Value;
+    end;
+  finally
+    tse.Free;
+  end;
 end; 
 ```
 
