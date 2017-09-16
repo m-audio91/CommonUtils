@@ -1,6 +1,6 @@
-﻿unit uFreeEditor;
+﻿unit uModalEditor;
 { A dialog form to work with anything you like. it's ChildSizing is set. just
-  create your controls after you've called CreateNew and set
+  create your controls after you've called Create constructor and set
   parent and owner of your newly created controls to MyFreeEditor instance.
   the layout is top to bottom so the creation order matters.
   also see uTimeCodeEdit for an example of a descendant class.
@@ -41,9 +41,9 @@ uses
   Classes, SysUtils, GraphType, Graphics, Forms, Controls, StdCtrls, ExtCtrls;
 
 type
-  { TFreeEditor }
+  { TModalEditor }
 
-  TFreeEditor = class(TForm)
+  TModalEditor = class(TForm)
   protected
     procedure DoShow; override;
   private
@@ -63,16 +63,16 @@ resourcestring
 
 implementation
 
-{ TFreeEditor }
+{ TModalEditor }
 
-procedure TFreeEditor.DoShow;
+procedure TModalEditor.DoShow;
 begin
   inherited DoShow;
   LoadDefaultControls;
   UpdateFormSize;
 end;
 
-procedure TFreeEditor.LoadDefaultControls;
+procedure TModalEditor.LoadDefaultControls;
 begin
   //FActions
   FActions := TPanel.Create(Self);
@@ -113,7 +113,7 @@ begin
   FOk.Left := FCancel.Left+FCancel.Width;
 end;
 
-procedure TFreeEditor.UpdateFormSize;
+procedure TModalEditor.UpdateFormSize;
 var
   w,h: Integer;
 begin
@@ -127,12 +127,12 @@ begin
   Constraints.MinHeight := h;
 end;
 
-constructor TFreeEditor.Create(AOwner: TComponent);
+constructor TModalEditor.Create(AOwner: TComponent);
 begin
   CreateNew(AOwner, 0);
 end;
 
-constructor TFreeEditor.CreateNew(AOwner: TComponent; Num: Integer);
+constructor TModalEditor.CreateNew(AOwner: TComponent; Num: Integer);
 begin
   //Self
   inherited CreateNew(AOwner, Num);

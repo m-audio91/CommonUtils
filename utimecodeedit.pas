@@ -35,12 +35,12 @@ interface
 
 uses
   Classes, SysUtils, GraphType, Graphics, Forms, Controls, StdCtrls, ExtCtrls,
-  Spin, uFreeEditor, uTimeCode;
+  Spin, uModalEditor, uTimeCode;
 
 type
 { TTimeCodeEdit }
 
-  TTimeCodeEdit = class(TFreeEditor)
+  TTimeCodeEdit = class(TModalEditor)
   private
     FValue: TTimeCode;
     FInputs: TPanel;

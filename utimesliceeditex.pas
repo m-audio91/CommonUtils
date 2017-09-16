@@ -35,12 +35,12 @@ interface
 
 uses
   Classes, SysUtils, GraphType, Graphics, Forms, Controls, StdCtrls,
-  ExtCtrls, Spin, uFreeEditor, uTimeCode, uTimeSlice;
+  ExtCtrls, Spin, uModalEditor, uTimeCode, uTimeSlice;
 
 type
 { TTimeSliceEditEx }
 
-  TTimeSliceEditEx = class(TFreeEditor)
+  TTimeSliceEditEx = class(TModalEditor)
   private
     FValue: TTimeSlice;
     FInputs1: TPanel;

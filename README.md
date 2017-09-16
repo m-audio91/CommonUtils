@@ -2,7 +2,7 @@
 last Free Pascal version used to compile was 3.1.1 trunk r37023  
 last Lazarus version used to compile was 1.9 trunk r55735  
 may not work on older release versions.  
-all units in this repository are independent from outside. but may require each other. for example uTimeCodeEdit requires uFreeEditor and uTimeCode.
+all units in this repository are independent from outside. but may require each other. for example uTimeCodeEdit requires uModalEditor and uTimeCode.
 
 ## CommonFileUtils.pas
 Common routines to work with files.
@@ -52,6 +52,12 @@ end;
  
 ...
 ```
+
+## uModalEditor;
+A dialog form to work with anything you like. it's ChildSizing is set. It only contains OK and Cancel buttons.  
+just create your controls after you've called create constructor and set parent and owner of your newly created controls to TModalEditor instance.  
+the layout is top to bottom so the creation order matters.  
+also see uTimeCodeEdit for an example of a descendant class.  
 
 ## uTimeCode.pas
 A TimeCode and TimeCode List parser.
