@@ -64,9 +64,9 @@ type
   end;
 
 resourcestring
-  rsFreeEditor = 'ویرایشگر زمانبندی';
-  rsTFEOK = 'تایید';
-  rsTFECancel = 'صرف نظر';
+  rsTimeCodeEditor = 'ویرایشگر زمانبندی';
+  rsTCEOK = 'تایید';
+  rsTCECancel = 'صرف نظر';
 
 implementation
 
