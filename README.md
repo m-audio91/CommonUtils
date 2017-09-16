@@ -53,7 +53,7 @@ end;
 ...
 ```
 
-## uModalEditor;
+## uModalEditor.pas
 A dialog form to work with anything you like. it's ChildSizing is set. It only contains OK and Cancel buttons.  
 just create your controls after you've called create constructor and set parent and owner of your newly created controls to TModalEditor instance.  
 the layout is top to bottom so the creation order matters.  
