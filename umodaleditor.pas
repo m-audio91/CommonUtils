@@ -45,11 +45,11 @@ type
 
   TModalEditor = class(TForm)
   protected
+    FOk: TButton;
+    FCancel: TButton;
     procedure DoShow; override;
   private
     FActions: TPanel;
-    FOk: TButton;
-    FCancel: TButton;
     procedure LoadDefaultControls;
     procedure UpdateFormSize;
   public
