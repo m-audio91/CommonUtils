@@ -150,7 +150,7 @@ begin
   S := TCStr;
   case S.CountChar(AMajorSep) of
   0:begin
-    if StrToFloatDef(S.Replace(',','.'), -1) <> -1 then Exit(tptDouble);
+    if StrToFloatDef(S, -1) <> -1 then Exit(tptDouble);
     end;
   1..2:
     begin
@@ -260,7 +260,7 @@ begin
   Pattern := IdentTimeCodePattern(S, AMajorSep, AMinorSep);
   case Pattern of
   tptInvalid: Exit;
-  tptDouble: Result := DoubleToTimeCode(S.Replace(',','.').ToDouble);
+  tptDouble: Result := DoubleToTimeCode(S.ToDouble);
   tpt01: begin
     Result.M := S.Substring(0,1).ToInteger;
     Result.S := S.Substring(2,1).ToInteger;

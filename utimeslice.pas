@@ -200,7 +200,7 @@ begin
   if Length(sa) <> 3 then Exit;
   FValue.StartPos.ValueAsString := sa[0].Substring(SliceStartMarker.Length);
   FValue.EndPos.ValueAsString := sa[1].Substring(SliceEndMarker.Length);
-  SetDelay(sa[2].Substring(SliceDelayMarker.Length).Replace(',','.').ToDouble);
+  SetDelay(sa[2].Substring(SliceDelayMarker.Length).ToDouble);
 end;
 
 function TTimeSlice.GetDuration: TTimeCode;
