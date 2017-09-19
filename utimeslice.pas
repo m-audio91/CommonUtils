@@ -45,13 +45,20 @@ type
     EndPos: TTimeCode;
   end;
 
+  { TTimeSliceFormatSettings }
+
+  TTimeSliceFormatSettings = record
+    TimeCodeFormat: TTimeCodeFormatSettings;
+    SliceSep: String;
+  end;
+
   { TTimeSlice }
 
   TTimeSlice = record
   private 
     FInitialized: String;
     FValue: TBasicTimeSlice;
-    FSliceSep: String;
+    FFormatSettings: TTimeSliceFormatSettings;
     procedure InitCheck;
     function CheckValidity: Boolean;
     function GetDuration: TTimeCode;
@@ -64,7 +71,8 @@ type
     procedure SetValueStringEx(AValue: String);
   public
     procedure Initialize(MillisecondPrecision: Word; MajorSep, MinorSep: Char;
-      const SliceSep: String);
+      const SliceSep: String); overload;
+    procedure Initialize(const AFormatSettings: TTimeSliceFormatSettings); overload;
     procedure Reset;
     property Valid: Boolean read CheckValidity;
     property Delay: Double read GetDelay write SetDelay;
@@ -73,6 +81,7 @@ type
     property ValueAsStringEx: String read GetValueStringEx write SetValueStringEx;
     property ValueWithDelay: TBasicTimeSlice read GetDelayedTimeSlice;
     property Duration: TTimeCode read GetDuration;
+    property TimeSliceFormat: TTimeSliceFormatSettings read FFormatSettings write Initialize;
   end;
 
   { TTimeSliceList }
@@ -122,7 +131,10 @@ procedure TTimeSlice.InitCheck;
 begin
   if FInitialized <> 'Yes!' then
   begin
-    FSliceSep := DefaultTimeSliceSep;
+    FFormatSettings.TimeCodeFormat.MillisecondPrecision := DefaultMillisecondPrecision;
+    FFormatSettings.TimeCodeFormat.MajorSep := DefaultTimeSep;
+    FFormatSettings.TimeCodeFormat.MinorSep := DefaultMillisecSep;
+    FFormatSettings.SliceSep := DefaultTimeSliceSep;
     FInitialized := 'Yes!';
   end;
 end;
@@ -132,8 +144,20 @@ procedure TTimeSlice.Initialize(MillisecondPrecision: Word; MajorSep, MinorSep
 begin
   FValue.StartPos.Initialize(MillisecondPrecision, MajorSep, MinorSep);
   FValue.EndPos.Initialize(MillisecondPrecision, MajorSep, MinorSep);
-  FSliceSep := SliceSep;
+  FFormatSettings.TimeCodeFormat.MillisecondPrecision := MillisecondPrecision;
+  FFormatSettings.TimeCodeFormat.MajorSep := MajorSep;
+  FFormatSettings.TimeCodeFormat.MinorSep := MinorSep;
+  FFormatSettings.SliceSep := SliceSep;
   FInitialized := 'Yes!';
+end;
+
+procedure TTimeSlice.Initialize(const AFormatSettings: TTimeSliceFormatSettings
+  );
+begin
+  Initialize(AFormatSettings.TimeCodeFormat.MillisecondPrecision,
+    AFormatSettings.TimeCodeFormat.MajorSep,
+    AFormatSettings.TimeCodeFormat.MinorSep,
+    AFormatSettings.SliceSep);
 end;
 
 procedure TTimeSlice.Reset;
@@ -157,7 +181,7 @@ end;
 function TTimeSlice.GetValueString: String;
 begin
   InitCheck;
-  Result := FValue.StartPos.ValueAsString + FSliceSep
+  Result := FValue.StartPos.ValueAsString + FFormatSettings.SliceSep
     +FValue.EndPos.ValueAsString;
 end;
 
@@ -167,10 +191,10 @@ var
 begin
   InitCheck;
   Reset;
-  i := AValue.IndexOf(FSliceSep);
-  if (i < 1) or (i+FSliceSep.Length > AValue.Length-2) then Exit;
+  i := AValue.IndexOf(FFormatSettings.SliceSep);
+  if (i < 1) or (i+FFormatSettings.SliceSep.Length > AValue.Length-2) then Exit;
   FValue.StartPos.ValueAsString := AValue.Substring(0, i);
-  FValue.EndPos.ValueAsString := AValue.Substring(i+FSliceSep.Length);
+  FValue.EndPos.ValueAsString := AValue.Substring(i+FFormatSettings.SliceSep.Length);
 end;
 
 function TTimeSlice.GetDelay: Double;
