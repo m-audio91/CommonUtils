@@ -150,6 +150,12 @@ type
     property Count: Integer read GetCount;
   end;
 
+const
+  DefaultTimeCodeFormatSettings: TTimeCodeFormatSettings = (
+    MillisecondPrecision: DefaultMillisecondPrecision;
+    MajorSep: DefaultTimeSep;
+    MinorSep: DefaultMillisecSep;);
+
 implementation
 
 function IdentTimeCodePattern(const TCStr: String; const AMajorSep,
