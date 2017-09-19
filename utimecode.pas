@@ -168,7 +168,8 @@ begin
   S := TCStr;
   case S.CountChar(AMajorSep) of
   0:begin
-    if StrToFloatDef(S, -1) <> -1 then Exit(tptDouble);
+    if StrToFloatDef(S.Replace(AMinorSep, DefaultFormatSettings.DecimalSeparator)
+      , -1) <> -1 then Exit(tptDouble);
     end;
   1..2:
     begin
@@ -278,7 +279,8 @@ begin
   Pattern := IdentTimeCodePattern(S, AMajorSep, AMinorSep);
   case Pattern of
   tptInvalid: Exit;
-  tptDouble: Result := DoubleToTimeCode(S.ToDouble);
+  tptDouble: Result := DoubleToTimeCode(S.Replace(AMinorSep
+    , DefaultFormatSettings.DecimalSeparator).ToDouble);
   tpt01: begin
     Result.M := S.Substring(0,1).ToInteger;
     Result.S := S.Substring(2,1).ToInteger;
