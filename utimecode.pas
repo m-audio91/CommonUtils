@@ -137,6 +137,7 @@ type
 const
   DefaultTimeSep = ':';
   DefaultMillisecSep = '.';
+  AllowedTimeCodeSeps: set of Char = [':','.',',',';','`','/','\',''''];
 
 implementation
 
@@ -367,8 +368,12 @@ end;
 procedure TTimeCode.Initialize(MillisecondPrecision: Word; MajorSep,
   MinorSep: Char);
 begin
+  if not (MajorSep in AllowedTimeCodeSeps) then
+    raise Exception.Create('Invalid time separator!');
+  if not (MinorSep in AllowedTimeCodeSeps) then
+    raise Exception.Create('Invalid millisecond separator!');
   if MajorSep = MinorSep then
-    raise Exception.Create('Similar values for MajorSep and MinorSep!');
+    raise Exception.Create('Similar values for time and millisecond separator!');
   FMillisecondPrecision := MillisecondPrecision;
   FMajorSep := MajorSep;
   FMinorSep := MinorSep;
