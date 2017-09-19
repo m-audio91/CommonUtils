@@ -238,5 +238,5 @@ begin
   end;
 end;  
 ```
-An extended version that has a property called URL is also included. see [FaSubrip](https://github.com/m-audio91/FaSubrip/blob/master/umain.pas) FormCreate for example.
+An extended version that has a property called URL is also included. see [FaSubrip](https://github.com/m-audio91/FaSubrip/blob/master/umain.pas)'s FormCreate for example.
 
