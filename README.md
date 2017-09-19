@@ -130,7 +130,7 @@ begin
   SBDatas.TaskDlg.Execute(Self.Handle); //this just shows some information text
   fd := TTimeCodeFormatDialog.Create(Self);
   try
-    fd.Value.TimeCodeFormat := FFormatSettings;
+    fd.Value.TimeCodeFormat := FFormatSettings; //optional, you can prepare it with some previously stored setting
     fd.ShowModal;
     if fd.ModalResult = mrOK then
       FFormatSettings := fd.Value.TimeCodeFormat;
