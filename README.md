@@ -119,6 +119,28 @@ begin
 end;  
 ```
 
+## uTimeCodeFormatDialog.pas  
+A dialog form to define format for further TimeCode inputs. such as paste from clipboard, read from file etc.  
+an usage example from [SubzBor](https://github.com/m-audio91/SubzBor) project:  
+```
+procedure TSBMain.DefineUserInputsFormat;
+var
+  fd: TTimeCodeFormatDialog;
+begin
+  SBDatas.TaskDlg.Execute(Self.Handle); //this just shows some information text
+  fd := TTimeCodeFormatDialog.Create(Self);
+  try
+    fd.Value.TimeCodeFormat := FFormatSettings;
+    fd.ShowModal;
+    if fd.ModalResult = mrOK then
+      FFormatSettings := fd.Value.TimeCodeFormat;
+  finally
+    fd.Free;
+  end;
+  FInputsFormatDefined := True;
+end;
+```  
+
 ## uTimeSlice.pas
 A TimeSlice and TimeSlice List parser based on uTimeCode unit.
 Here `00:00:00.000-00:00:00.001` is considered a valid slice of the time (a TimeSlice).
