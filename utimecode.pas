@@ -274,7 +274,6 @@ function StringToTimeCode(const S: String;
 var
   Pattern: TTimeCodePattern;
 begin
-  Result := Default(TBasicTimeCode);
   Result.Reset;
   Pattern := IdentTimeCodePattern(S, AMajorSep, AMinorSep);
   case Pattern of
@@ -362,7 +361,7 @@ end;
 function ArrayToTimeCode(const TCA: TBasicTimeCodeArray;
   AMilisecondMultiplier: Word): TBasicTimeCode;
 begin
-  Result := Default(TBasicTimeCode);
+  Result.Reset;
   Result.H := TCA[0];
   Result.M := TCA[1];
   Result.S := TCA[2];
