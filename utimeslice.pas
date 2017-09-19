@@ -36,6 +36,9 @@ interface
 uses
   Classes, SysUtils, uTimeCode;
 
+const
+  DefaultTimeSliceSep = '-';
+
 type
 
   { TBasicTimeSlice }
@@ -70,8 +73,10 @@ type
     function GetValueStringEx: String;
     procedure SetValueStringEx(AValue: String);
   public
-    procedure Initialize(MillisecondPrecision: Word; MajorSep, MinorSep: Char;
-      const SliceSep: String); overload;
+    procedure Initialize(MillisecondPrecision: Word = DefaultMillisecondPrecision;
+      MajorSep: Char = DefaultTimeSep;
+      MinorSep: Char = DefaultMillisecSep;
+      const SliceSep: String = DefaultTimeSliceSep); overload;
     procedure Initialize(const AFormatSettings: TTimeSliceFormatSettings); overload;
     procedure Reset;
     property Valid: Boolean read CheckValidity;
@@ -114,9 +119,6 @@ type
     property ExtendedValue: String read GetExtendedValueString write SetExtendedValueString;
     property Count: Integer read GetCount;
   end;
-
-const
-  DefaultTimeSliceSep = '-';
 
 implementation
 
