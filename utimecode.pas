@@ -70,15 +70,21 @@ type
 
    TBasicTimeCodeArray = array[0..3] of Integer;
 
+  { TTimeCodeFormatSettings }
+
+  TTimeCodeFormatSettings = record
+    MillisecondPrecision: Word;
+    MajorSep: Char;
+    MinorSep: Char;
+  end;
+
   { TTimeCode }
 
   TTimeCode = record
   private
     FInitialized: String;
     FValue: TBasicTimeCode;
-    FMillisecondPrecision: Word;
-    FMajorSep: Char;
-    FMinorSep: Char;
+    FFormatSettings: TTimeCodeFormatSettings;
     FDelay: Double;
     function MillisecondMultiplier: Integer;
     function GetValueString: String;
@@ -93,7 +99,8 @@ type
     function GetValueWithDelayDouble: Double;
     function GetValueWithDelayArray: TBasicTimeCodeArray;
   public
-    procedure Initialize(MillisecondPrecision: Word; MajorSep, MinorSep: Char);
+    procedure Initialize(MillisecondPrecision: Word; MajorSep, MinorSep: Char); overload;
+    procedure Initialize(const AFormatSettings: TTimeCodeFormatSettings); overload;
     property Value: TBasicTimeCode read FValue write FValue;
     property ValueAsString: String read GetValueString write SetValueString;
     property ValueAsDouble: Double read GetValueDouble write SetValueDouble;
@@ -103,6 +110,7 @@ type
     property ValueWithDelayAsString: String read GetValueWithDelayString;
     property ValueWithDelayAsDouble: Double read GetValueWithDelayDouble;
     property ValueWithDelayAsArray: TBasicTimeCodeArray read GetValueWithDelayArray;
+    property TimeCodeFormat: TTimeCodeFormatSettings read FFormatSettings write Initialize;
   end;
 
   { TConstantTimeCodes }
@@ -374,10 +382,16 @@ begin
     raise Exception.Create('Invalid millisecond separator!');
   if MajorSep = MinorSep then
     raise Exception.Create('Similar values for time and millisecond separator!');
-  FMillisecondPrecision := MillisecondPrecision;
-  FMajorSep := MajorSep;
-  FMinorSep := MinorSep;
+  FFormatSettings.MillisecondPrecision := MillisecondPrecision;
+  FFormatSettings.MajorSep := MajorSep;
+  FFormatSettings.MinorSep := MinorSep;
   FInitialized := 'Yes!';
+end;
+
+procedure TTimeCode.Initialize(const AFormatSettings: TTimeCodeFormatSettings);
+begin
+  Initialize(AFormatSettings.MillisecondPrecision, AFormatSettings.MajorSep,
+    AFormatSettings.MinorSep);
 end;
 
 procedure TTimeCode.InitCheck;
@@ -391,25 +405,26 @@ end;
 
 function TTimeCode.MillisecondMultiplier: Integer;
 begin
-  Result := NMultiplier(FMillisecondPrecision);
+  Result := NMultiplier(FFormatSettings.MillisecondPrecision);
 end;
 
 function TTimeCode.GetValueString: String;
 begin
   InitCheck;
-  Result := TimeCodeToString(FValue, FMajorSep, FMinorSep, FMillisecondPrecision);
+  Result := TimeCodeToString(FValue, FFormatSettings.MajorSep,
+    FFormatSettings.MinorSep, FFormatSettings.MillisecondPrecision);
 end;
 
 procedure TTimeCode.SetValueString(const AValue: String);
 begin
   InitCheck;
-  FValue := StringToTimeCode(AValue, FMajorSep, FMinorSep);
+  FValue := StringToTimeCode(AValue, FFormatSettings.MajorSep, FFormatSettings.MinorSep);
 end;
 
 function TTimeCode.GetValueDouble: Double;
 begin
   InitCheck;
-  Result := TimeCodeToDouble(FValue, FMillisecondPrecision);
+  Result := TimeCodeToDouble(FValue, FFormatSettings.MillisecondPrecision);
 end;
 
 procedure TTimeCode.SetValueDouble(const AValue: Double);
@@ -439,11 +454,11 @@ end;
 
 function TTimeCode.GetValueWithDelayString: String;
 begin
-  Result := TimeCodeToString(TConstantTimeCodes.Min.Value, FMajorSep,
-      FMinorSep, FMillisecondPrecision);
+  Result := TimeCodeToString(TConstantTimeCodes.Min.Value, FFormatSettings.MajorSep,
+      FFormatSettings.MinorSep, FFormatSettings.MillisecondPrecision);
   if ValueAsDouble + FDelay >= 0 then
-    Result := TimeCodeToString(ValueWithDelay, FMajorSep,
-      FMinorSep, FMillisecondPrecision);
+    Result := TimeCodeToString(ValueWithDelay, FFormatSettings.MajorSep,
+      FFormatSettings.MinorSep, FFormatSettings.MillisecondPrecision);
 end;
 
 function TTimeCode.GetValueWithDelayDouble: Double;
