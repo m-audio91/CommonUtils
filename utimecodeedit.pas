@@ -35,7 +35,7 @@ interface
 
 uses
   Classes, SysUtils, GraphType, Graphics, Forms, Controls, StdCtrls, ExtCtrls,
-  Spin, uModalEditor, uTimeCode;
+  Spin, Buttons, Clipbrd, uModalEditor, uTimeCode;
 
 type
 { TTimeCodeEdit }
@@ -44,6 +44,7 @@ type
   private
     FValue: TTimeCode;
     FInputs: TPanel;
+    FPaste: TSpeedButton;
     FHour,
     FMinute,
     FSecond,
@@ -51,17 +52,25 @@ type
     Sep1,
     Sep2,
     Sep3: TLabel;
+    FPasteFormat: TTimeCodeFormatSettings;
     procedure LoadControls(Sender: TObject);
     procedure OnClosing(Sender: TObject; var CanClose: Boolean);
+    procedure OnPasteClick(Sender: TObject);
     function GetValue: String;
     procedure SetValue(const AValue: String);
   public
     property Value: String read GetValue write SetValue;
+    property PasteFormat: TTimeCodeFormatSettings read FPasteFormat write FPasteFormat;
     constructor CreateNew(AOwner: TComponent; Num: Integer = 0); override;
   end;
 
 resourcestring
   rsTimeCodeEditor = 'ویرایشگر زمانبندی';
+  rsTCEHour = 'ساعت';
+  rsTCEMinute = 'دقیقه';
+  rsTCESecond = 'ثانیه';
+  rsTCEMillisecond = 'هزارم ثانیه';
+  rsTCEPaste = 'چسباندن';
 
 implementation
 
@@ -79,9 +88,20 @@ begin
     AutoSize := True;
     BorderSpacing.Top := 8;
     ChildSizing.Layout := cclLeftToRightThenTopToBottom;
-    ChildSizing.ControlsPerLine := 7;
+    ChildSizing.ControlsPerLine := 8;
     ChildSizing.HorizontalSpacing := 2;
     Color := clForm;
+    ShowHint := True;
+  end;
+
+  //FPaste
+  FPaste := TSpeedButton.Create(Self);
+  with FPaste do
+  begin
+    Parent := FInputs;
+    AutoSize := True;
+    Caption := rsTCEPaste;
+    OnClick := @OnPasteClick;
   end;
 
   //FHour
@@ -93,6 +113,7 @@ begin
     MaxValue := 59;
     Alignment := taCenter;
     Increment := 1;
+    Hint := rsTCEHour;
     Constraints.MinWidth := Trunc(Width*1.5);
     Value := FValue.Value.H;
   end;
@@ -113,7 +134,8 @@ begin
     MinValue := 0;
     MaxValue := 59;
     Alignment := taCenter;
-    Increment := 1;
+    Increment := 1; 
+    Hint := rsTCEMinute;
     Constraints.MinWidth := Trunc(Width*1.5);
     Value := FValue.Value.M;
   end;
@@ -135,6 +157,7 @@ begin
     MaxValue := 59;
     Alignment := taCenter;
     Increment := 1;
+    Hint := rsTCESecond;
     Constraints.MinWidth := Trunc(Width*1.5);
     Value := FValue.Value.S;
   end;
@@ -156,6 +179,7 @@ begin
     MaxValue := 999;
     Alignment := taCenter;
     Increment := 1;
+    Hint := rsTCEMillisecond;
     Constraints.MinWidth := Width*2;
     Value := FValue.ValueAsArray[3];
   end;
@@ -171,6 +195,18 @@ begin
   tc[3] := FMilisecond.Value;
   FValue.ValueAsArray := tc;
   CanClose := True;
+end;
+
+procedure TTimeCodeEdit.OnPasteClick(Sender: TObject);
+var
+  tc: TTimeCode;
+begin
+  tc.TimeCodeFormat := FPasteFormat;
+  tc.ValueAsString := ClipBoard.AsText;
+  FHour.Value := tc.ValueAsArray[0];
+  FMinute.Value := tc.ValueAsArray[1];
+  FSecond.Value := tc.ValueAsArray[2];
+  FMilisecond.Value := tc.ValueAsArray[3];
 end;
 
 function TTimeCodeEdit.GetValue: String;
@@ -192,6 +228,7 @@ begin
   OnCloseQuery := @OnClosing;
 
   FValue := Default(TTimeCode);
+  FPasteFormat := DefaultTimeCodeFormatSettings;
 end;
 
 end.
