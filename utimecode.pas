@@ -36,6 +36,12 @@ interface
 uses
   Classes, SysUtils, CommonStrUtils, CommonNumeralUtils;
 
+const
+  DefaultTimeSep = ':';
+  DefaultMillisecSep = '.';
+  DefaultMillisecondPrecision = 3;
+  AllowedTimeCodeSeps: set of Char = [':','.',',',';','`','/','\',''''];
+
 type
 
   { TTimeCodePattern }
@@ -99,7 +105,9 @@ type
     function GetValueWithDelayDouble: Double;
     function GetValueWithDelayArray: TBasicTimeCodeArray;
   public
-    procedure Initialize(MillisecondPrecision: Word; MajorSep, MinorSep: Char); overload;
+    procedure Initialize(MillisecondPrecision: Word = DefaultMillisecondPrecision;
+      MajorSep: Char = DefaultTimeSep;
+      MinorSep: Char = DefaultMillisecSep); overload;
     procedure Initialize(const AFormatSettings: TTimeCodeFormatSettings); overload;
     property Value: TBasicTimeCode read FValue write FValue;
     property ValueAsString: String read GetValueString write SetValueString;
@@ -141,11 +149,6 @@ type
     property Value: String read GetValueString write SetValueString;
     property Count: Integer read GetCount;
   end;
-
-const
-  DefaultTimeSep = ':';
-  DefaultMillisecSep = '.';
-  AllowedTimeCodeSeps: set of Char = [':','.',',',';','`','/','\',''''];
 
 implementation
 
@@ -399,7 +402,7 @@ begin
   if FInitialized <> 'Yes!' then
   begin
     FDelay := 0;
-    Initialize(3, DefaultTimeSep, DefaultMillisecSep);
+    Initialize(DefaultMillisecondPrecision, DefaultTimeSep, DefaultMillisecSep);
   end;
 end;
 
