@@ -122,7 +122,7 @@ end;
 ## uTimeCodeFormatDialog.pas  
 A dialog form to define format for further TimeCode inputs. such as paste from clipboard, read from file etc.  
 an usage example from [SubzBor](https://github.com/m-audio91/SubzBor) project:  
-```
+```pascal
 procedure TSBMain.DefineUserInputsFormat;
 var
   fd: TTimeCodeFormatDialog;
