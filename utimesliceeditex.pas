@@ -34,8 +34,8 @@
 interface
 
 uses
-  Classes, SysUtils, GraphType, Graphics, Forms, Controls, StdCtrls,
-  ExtCtrls, Spin, uModalEditor, uTimeCode, uTimeSlice;
+  Classes, SysUtils, GraphType, Graphics, Forms, Controls, StdCtrls, Buttons,
+  ExtCtrls, Spin, Clipbrd, uModalEditor, uTimeCode, uTimeSlice;
 
 type
 { TTimeSliceEditEx }
@@ -44,6 +44,7 @@ type
   private
     FValue: TTimeSlice;
     FInputs1: TPanel;
+    FPaste1: TSpeedButton;
     FHour1,
     FMinute1,
     FSecond1,
@@ -53,6 +54,7 @@ type
     Sep3,
     Title1: TLabel;
     FInputs2: TPanel;
+    FPaste2: TSpeedButton;
     FHour2,
     FMinute2,
     FSecond2,
@@ -64,12 +66,15 @@ type
     FInputs3: TPanel;
     FDelay: TFloatSpinEdit;
     Title3: TLabel;
+    FPasteFormat: TTimeCodeFormatSettings;
     procedure LoadControls(Sender: TObject);
     procedure OnClosing(Sender: TObject; var CanClose: Boolean);
+    procedure OnPasteClick(Sender: TObject);
     function GetValue: String;
     procedure SetValue(const AValue: String);
   public
     property Value: String read GetValue write SetValue;
+    property PasteFormat: TTimeCodeFormatSettings read FPasteFormat write FPasteFormat;
     constructor CreateNew(AOwner: TComponent; Num: Integer = 0); override;
   end;
 
@@ -82,6 +87,7 @@ resourcestring
   rsTSEXMinute = 'دقیقه';
   rsTSEXSecond = 'ثانیه';
   rsTSEXMillisecond = 'هزارم ثانیه';
+  rsTSEPaste = 'چسباندن';
 
 implementation
 
@@ -99,10 +105,21 @@ begin
     AutoSize := True;
     BorderSpacing.Top := 8;
     ChildSizing.Layout := cclLeftToRightThenTopToBottom;
-    ChildSizing.ControlsPerLine := 8;
+    ChildSizing.ControlsPerLine := 9;
     ChildSizing.HorizontalSpacing := 2;
     Color := clForm;
     ShowHint := True;
+  end;
+
+  //FPaste1
+  FPaste1 := TSpeedButton.Create(Self);
+  with FPaste1 do
+  begin
+    Parent := FInputs1;
+    AutoSize := True;
+    Caption := rsTSEPaste;
+    Name := 'FPaste1';
+    OnClick := @OnPasteClick;
   end;
 
   //FHour1
@@ -207,10 +224,21 @@ begin
     AutoSize := True;
     BorderSpacing.Top := 8;
     ChildSizing.Layout := cclLeftToRightThenTopToBottom;
-    ChildSizing.ControlsPerLine := 8;
+    ChildSizing.ControlsPerLine := 9;
     ChildSizing.HorizontalSpacing := 2;
     Color := clForm;
     ShowHint := True;
+  end;
+
+  //FPaste2
+  FPaste2 := TSpeedButton.Create(Self);
+  with FPaste2 do
+  begin
+    Parent := FInputs2;
+    AutoSize := True;
+    Caption := rsTSEPaste;
+    Name := 'FPaste2';
+    OnClick := @OnPasteClick;
   end;
 
   //FHour2
@@ -370,6 +398,28 @@ begin
   CanClose := True;
 end;
 
+procedure TTimeSliceEditEx.OnPasteClick(Sender: TObject);
+var
+  tc: TTimeCode;
+begin
+  tc.TimeCodeFormat := FPasteFormat;
+  tc.ValueAsString := ClipBoard.AsText;
+  case (Sender as TComponent).Name of
+  'FPaste1': begin
+    FHour1.Value := tc.ValueAsArray[0];
+    FMinute1.Value := tc.ValueAsArray[1];
+    FSecond1.Value := tc.ValueAsArray[2];
+    FMilisecond1.Value := tc.ValueAsArray[3];
+    end;
+  'FPaste2': begin
+    FHour2.Value := tc.ValueAsArray[0];
+    FMinute2.Value := tc.ValueAsArray[1];
+    FSecond2.Value := tc.ValueAsArray[2];
+    FMilisecond2.Value := tc.ValueAsArray[3];
+    end;
+  end;
+end;
+
 function TTimeSliceEditEx.GetValue: String;
 begin
   Result := FValue.ValueAsStringEx;
@@ -389,6 +439,7 @@ begin
   OnCloseQuery := @OnClosing;
 
   FValue := Default(TTimeSlice);
+  FPasteFormat := DefaultTimeCodeFormatSettings;
 end;
 
 end.
