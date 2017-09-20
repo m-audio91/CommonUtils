@@ -338,7 +338,8 @@ begin
     end;
   end;
   if S.Contains(AMinorSep) then
-    Result.MS := ('0.' + S.Substring(S.IndexOf(AMinorSep)+1)).ToSingle;
+    Result.MS := ('0'+DefaultFormatSettings.DecimalSeparator
+      +S.Substring(S.IndexOf(AMinorSep)+1)).ToSingle;
   with Result do
   begin
     if (H > 59) or (M > 59) or (S > 59) then
