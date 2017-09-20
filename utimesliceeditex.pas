@@ -438,7 +438,7 @@ begin
   OnShow := @LoadControls;
   OnCloseQuery := @OnClosing;
 
-  FValue := Default(TTimeSlice);
+  FValue.Reset;
   FPasteFormat := DefaultTimeCodeFormatSettings;
 end;
 
