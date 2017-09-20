@@ -142,7 +142,7 @@ procedure TTimeSlice.InitCheck;
 begin
   if FInitialized <> 'Yes!' then
   begin
-    FFormatSettings := DefaultTimeSliceFormatSettings;
+    Initialize(DefaultTimeSliceFormatSettings);
     FInitialized := 'Yes!';
   end;
 end;
