@@ -51,7 +51,9 @@ type
   { TTimeSliceFormatSettings }
 
   TTimeSliceFormatSettings = record
-    TimeCodeFormat: TTimeCodeFormatSettings;
+    MillisecondPrecision: Word;
+    MajorSep: Char;
+    MinorSep: Char;
     SliceSep: String;
   end;
 
@@ -120,6 +122,13 @@ type
     property Count: Integer read GetCount;
   end;
 
+const
+  DefaultTimeSliceFormatSettings: TTimeSliceFormatSettings = (
+    MillisecondPrecision: DefaultMillisecondPrecision;
+    MajorSep: DefaultTimeSep;
+    MinorSep: DefaultMillisecSep;
+    SliceSep: DefaultTimeSliceSep;);
+
 implementation
 
 const
@@ -133,10 +142,7 @@ procedure TTimeSlice.InitCheck;
 begin
   if FInitialized <> 'Yes!' then
   begin
-    FFormatSettings.TimeCodeFormat.MillisecondPrecision := DefaultMillisecondPrecision;
-    FFormatSettings.TimeCodeFormat.MajorSep := DefaultTimeSep;
-    FFormatSettings.TimeCodeFormat.MinorSep := DefaultMillisecSep;
-    FFormatSettings.SliceSep := DefaultTimeSliceSep;
+    FFormatSettings := DefaultTimeSliceFormatSettings;
     FInitialized := 'Yes!';
   end;
 end;
@@ -146,9 +152,9 @@ procedure TTimeSlice.Initialize(MillisecondPrecision: Word; MajorSep, MinorSep
 begin
   FValue.StartPos.Initialize(MillisecondPrecision, MajorSep, MinorSep);
   FValue.EndPos.Initialize(MillisecondPrecision, MajorSep, MinorSep);
-  FFormatSettings.TimeCodeFormat.MillisecondPrecision := MillisecondPrecision;
-  FFormatSettings.TimeCodeFormat.MajorSep := MajorSep;
-  FFormatSettings.TimeCodeFormat.MinorSep := MinorSep;
+  FFormatSettings.MillisecondPrecision := MillisecondPrecision;
+  FFormatSettings.MajorSep := MajorSep;
+  FFormatSettings.MinorSep := MinorSep;
   FFormatSettings.SliceSep := SliceSep;
   FInitialized := 'Yes!';
 end;
@@ -156,9 +162,9 @@ end;
 procedure TTimeSlice.Initialize(const AFormatSettings: TTimeSliceFormatSettings
   );
 begin
-  Initialize(AFormatSettings.TimeCodeFormat.MillisecondPrecision,
-    AFormatSettings.TimeCodeFormat.MajorSep,
-    AFormatSettings.TimeCodeFormat.MinorSep,
+  Initialize(AFormatSettings.MillisecondPrecision,
+    AFormatSettings.MajorSep,
+    AFormatSettings.MinorSep,
     AFormatSettings.SliceSep);
 end;
 
