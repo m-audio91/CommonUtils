@@ -60,7 +60,7 @@ type
   end;
 
 resourcestring
-  rsTimeCodeFormatDialog = 'انتخابگر ساختار زمان بندی';
+  rsTimeCodeFormatDialog = 'انتخابگر ساختار کدزمان ها';
   rsTimeSep = 'جدا کننده ساعت، دقیقه و ثانیه';
   rsMillisecSep = 'جدا کننده ثانیه و هزارم ثانیه';
   rsMillisecPrecision = 'دقت هزارم ثانیه';
