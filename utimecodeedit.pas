@@ -227,7 +227,7 @@ begin
   OnShow := @LoadControls;
   OnCloseQuery := @OnClosing;
 
-  FValue := Default(TTimeCode);
+  FValue.Value.Reset;
   FPasteFormat := DefaultTimeCodeFormatSettings;
 end;
 
