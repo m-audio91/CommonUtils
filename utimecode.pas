@@ -409,7 +409,7 @@ begin
   if FInitialized <> 'Yes!' then
   begin
     FDelay := 0;
-    Initialize(DefaultMillisecondPrecision, DefaultTimeSep, DefaultMillisecSep);
+    Initialize(DefaultTimeCodeFormatSettings);
   end;
 end;
 
