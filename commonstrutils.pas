@@ -316,7 +316,7 @@ begin
   if AText = EmptyStr then Exit;
   if i <= AStartIndex then Exit;
   for i := AStartIndex to High(AArray) do
-    if AArray[i].IndexOf(AText) > 0 then
+    if AArray[i].IndexOf(AText) >= 0 then
     begin
       Result := i;
       Break;
