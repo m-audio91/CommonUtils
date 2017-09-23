@@ -67,6 +67,7 @@ procedure DeleteAllOccurrences(const SubStr: String; var Source: String;
 procedure DeleteAllOccurrencesVL(const SubStrStart, SubStrEnd: String;
   var Source: String; IncludeEnd: Boolean = True; const CensorMask: String = '');
 function ReplaceStrings(const S: String; Old, New: array of String): String;
+function NthIndexOf(const ASubStr, AStr: String; N: Integer): Integer;
 
 implementation
 
@@ -361,6 +362,26 @@ begin
   if High(Old) <> High(New) then Exit;
   for i := Low(Old) to High(Old) do
     Result := Result.Replace(Old[i], New[i], Flags);
+end;
+
+function NthIndexOf(const ASubStr, AStr: String; N: Integer): Integer;
+var
+  i,j: Integer;
+begin
+  Result := -1;
+  if IsEmptyStr(ASubStr) or IsEmptyStr(AStr) then Exit;
+  if (N < 1) or (AStr.Length < N) then Exit;
+  i := 0;
+  j := 0;
+  repeat
+    i := AStr.IndexOf(ASubStr, i);
+    if i >= 0 then
+    begin
+      Inc(j);
+      if j = N then Exit(i);
+      Inc(i);
+    end;
+  until i < 0;
 end;
 
 end.
