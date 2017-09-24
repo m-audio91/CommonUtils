@@ -62,6 +62,8 @@ function StringListToArray(var SL: TStringList): TStringArray;
 procedure ArrayToStringList(var AArray: TStringArray; var SL: TStringList);
 function FindInArray(var AArray: TStringArray; AText: String; AStartIndex:
   Integer = 0): Integer;
+function FindAnyInArray(var AArray: TStringArray; const ATexts: array of String;
+  AStartIndex: Integer = 0): Integer;
 procedure DeleteAllOccurrences(const SubStr: String; var Source: String;
   const CensorMask: String = '');
 procedure DeleteAllOccurrencesVL(const SubStrStart, SubStrEnd: String;
@@ -321,6 +323,26 @@ begin
       Result := i;
       Break;
     end;
+end;
+
+function FindAnyInArray(var AArray: TStringArray;
+  const ATexts: array of String; AStartIndex: Integer): Integer;
+var
+  Indexes: array of Integer;
+  i,j: Integer;
+begin
+  j := -1;
+  SetLength(Indexes, Length(ATexts));
+  for i := 0 to High(Indexes) do
+    Indexes[i] := FindInArray(AArray, ATexts[i], AStartIndex);
+  for i := 0 to High(Indexes) do
+    if Indexes[i] > -1 then
+      j := Indexes[i];
+  for i := 0 to High(Indexes) do
+    if (Indexes[i] > -1)
+    and (Indexes[i] < j)then
+      j := Indexes[i];
+  Result := j;
 end;
 
 procedure DeleteAllOccurrences(const SubStr: String; var Source: String;
