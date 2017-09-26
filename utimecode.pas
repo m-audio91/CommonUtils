@@ -142,7 +142,8 @@ type
     procedure Put(Index: Integer; AValue: TTimeCode);
     function GetCount: Integer;
   public
-    procedure Initialize(MillisecondPrecision: Word; MajorSep, MinorSep: Char);
+    procedure Initialize(MillisecondPrecision: Word; MajorSep, MinorSep: Char); overload;
+    procedure Initialize(const AFormatSettings: TTimeCodeFormatSettings); overload;
     procedure LoadFromFile(AFile: String);
     property Incremental: Boolean read CheckIncremental;
     property Values[Index: Integer]: TTimeCode read Get write Put;
@@ -511,6 +512,12 @@ procedure TTimeCodeList.Initialize(MillisecondPrecision: Word; MajorSep,
   MinorSep: Char);
 begin
   FTimeCode.Initialize(MillisecondPrecision, MajorSep, MinorSep);
+end;
+
+procedure TTimeCodeList.Initialize(
+  const AFormatSettings: TTimeCodeFormatSettings);
+begin
+  FTimeCode.Initialize(AFormatSettings);
 end;
 
 procedure TTimeCodeList.CheckIndex(AIndex: Integer);
