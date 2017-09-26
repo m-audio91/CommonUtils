@@ -110,7 +110,8 @@ type
     procedure SetExtendedValueString(AValue: String);
   public
     procedure Initialize(MillisecondPrecision: Word; MajorSep, MinorSep,
-      SliceSep: Char);
+      SliceSep: Char); overload;
+    procedure Initialize(const AFormatSettings: TTimeSliceFormatSettings); overload;
     procedure LoadFromFile(AFile: String);
     procedure LoadFromFileEx(AFile: String);
     property Valid: Boolean read CheckValidity;
@@ -254,7 +255,13 @@ procedure TTimeSliceList.Initialize(MillisecondPrecision: Word; MajorSep,
   MinorSep, SliceSep: Char);
 begin
   FSlice.Initialize(MillisecondPrecision, MajorSep, MinorSep, SliceSep);
-end; 
+end;
+
+procedure TTimeSliceList.Initialize(
+  const AFormatSettings: TTimeSliceFormatSettings);
+begin
+  FSlice.Initialize(AFormatSettings);
+end;
 
 procedure TTimeSliceList.CheckIndex(AIndex: Integer);
 begin
