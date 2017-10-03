@@ -53,6 +53,10 @@ end;
 ...
 ```
 
+## uMinimalList.pas
+A minimal generic list with virtual methods. mainly for small list of records. see [uGenericSubtitleFile](https://github.com/m-audio91/CodecUtils/blob/master/ugenericsubtitlefile.pas) for an example.
+
+
 ## uModalEditor.pas
 A dialog form to work with anything you like. it's ChildSizing is set. It only contains OK and Cancel buttons.  
 just create your controls after you've called create constructor and set parent and owner of your newly created controls to TModalEditor instance.  
