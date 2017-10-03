@@ -71,6 +71,7 @@ type
     function Add(AItem: T): Integer; virtual;
     procedure AddItems(AItems: TItems); virtual;
     procedure Remove(AIndex: Integer); virtual;
+    procedure Exchange(AFirstIndex, ASecondIndex: Integer); virtual;
     property Items[AIndex: Integer]: T read GetItem write SetItem; default;
     property PItems[AIndex: Integer]: PtrT read GetPItem write SetPItem;
     property Value: TItems read GetValue write SetValue;
@@ -192,6 +193,17 @@ begin
   for i := AIndex+1 to Count-1 do
     FList[i-1] := FList[i];
   Dec(FCount);
+end;
+
+procedure TMinimalList.Exchange(AFirstIndex, ASecondIndex: Integer);
+var
+  Temp: T;
+begin
+  CheckIndex(AFirstIndex);
+  CheckIndex(ASecondIndex);
+  Temp := Items[AFirstIndex];
+  PItems[AFirstIndex]^ := Items[ASecondIndex];
+  PItems[ASecondIndex]^ := Temp;
 end;
 
 constructor TMinimalList.Create(AOwner: TObject);
