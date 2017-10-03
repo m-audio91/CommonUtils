@@ -57,7 +57,6 @@ function NextNonDigit(const AStr: String; AIndex: Integer): Integer;
 function PrevNonDigit(const AStr: String; AIndex: Integer): Integer;
 procedure RemoveDupsInArray(var AArray: TStringArray);
 procedure NilIfEmptyArray(var AArray: TStringArray);
-function FixedFloatDecimalsCount(const AStr: String; ACount: Integer): String;
 function StringListToArray(var SL: TStringList): TStringArray;
 procedure ArrayToStringList(var AArray: TStringArray; var SL: TStringList);
 function FindInArray(var AArray: TStringArray; AText: String; AStartIndex:
@@ -265,22 +264,6 @@ begin
     end;
   if CanNil then
     AArray := nil;
-end;
-
-function FixedFloatDecimalsCount(const AStr: String; ACount: Integer): String;
-var
-  i,f,s: String;
-begin
-  Result := AStr;
-  if AStr.Length < 3 then Exit;
-  if StrToFloatDef(AStr, 0) = 0 then Exit;
-  if ACount < 1 then Exit;
-  s := AStr.SubString(AStr.IndexOfAny(['.',',']), 1);
-  if s = EmptyStr then Exit;
-  i := AStr.Substring(0, AStr.IndexOf(s));
-  f := AStr.Substring(AStr.IndexOf(s)+1);
-  if f.Length = ACount then Exit;
-  Result := i + s + StrForceLength(f,ACount,'0',True);
 end;
 
 function StringListToArray(var SL: TStringList): TStringArray;
