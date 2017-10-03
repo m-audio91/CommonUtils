@@ -60,8 +60,9 @@ type
     function GetCapacity: Integer;
     procedure SetCapacity(AValue: Integer);
   public
-    //this is not that Owner. with this we can access methods and properties
-    //of the parent type (owner) where this type is defined as a local type.
+    //this is not that kind of Owner. by defining a valid Owner we can access
+    //methods and properties of the Owner class where this type is defined as
+    //a local type.
     property Owner: TObject read FOwner;
     function Count: Integer;
     property Capacity: Integer read GetCapacity write SetCapacity;
@@ -77,6 +78,8 @@ type
     destructor Destroy; override;
   end;
 
+  EMinimalListError = class(Exception);
+
 implementation
 
 
@@ -85,7 +88,7 @@ implementation
 procedure TMinimalList.CheckIndex(AIndex: Integer);
 begin
   if (AIndex < Low(FList)) or (AIndex > Count-1) then
-    raise EListError.Create('Out of bounds index');
+    raise EMinimalListError.Create('Out of bounds index: '+AIndex.ToString);
 end;
 
 procedure TMinimalList.CheckCapacity(AAmount: Integer);
