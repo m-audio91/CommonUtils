@@ -1,5 +1,5 @@
 unit uMinimalList;
-{ A minimal generic list with virtual methods to work with small list of records
+{ A minimal generic list with virtual methods. mainly for small list of records
 
   Copyright (C) 2017 Mohammadreza Bahrami m.audio91@gmail.com
 
