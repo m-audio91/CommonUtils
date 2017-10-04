@@ -46,21 +46,23 @@ type
 
   { TTimeCodePattern }
 
-  TTimeCodePattern = (tptInvalid,tptDouble,tpt01,tpt02,tpt03,tpt04,tpt05,tpt06,
-    tpt07,tpt08,tpt09,tpt10,tpt11,tpt12);
-    //###.### or ###,### [tptDouble]
-    //#:# [tpt01]      -  length = 3
-    //#:## [tpt02]     \  length = 4
-    //##:# [tpt03]     /
-    //##:## [tpt04]    \
-    //#:#:# [tpt05]    /  length = 5
-    //##:#:# [tpt06]   \
-    //#:##:# [tpt07]    | length = 6
-    //#:#:## [tpt08]   /
-    //#:##:## [tpt09]  \
-    //##:#:## [tpt10]   | length = 7
-    //##:##:# [tpt11]  /
-    //##:##:## [tpt12] -  length = 8
+  TTimeCodePattern = (tptInvalid,tptArray,tptDouble,tpt01,tpt02,tpt03,tpt04,
+    tpt05,tpt06,tpt07,tpt08,tpt09,tpt10,tpt11,tpt12);
+
+  //(MajorSep = MinorSep) [tptArray]
+  //###.### [tptDouble]
+  //#:#(.###) [tpt01]      -  length = 3
+  //#:##(.###) [tpt02]     \  length = 4
+  //##:#(.###) [tpt03]     /
+  //##:##(.###) [tpt04]    \
+  //#:#:#(.###) [tpt05]    /  length = 5
+  //##:#:#(.###) [tpt06]   \
+  //#:##:#(.###) [tpt07]    | length = 6
+  //#:#:##(.###) [tpt08]   /
+  //#:##:##(.###) [tpt09]  \
+  //##:#:##(.###) [tpt10]   | length = 7
+  //##:##:#(.###) [tpt11]  /
+  //##:##:##(.###) [tpt12] -  length = 8
 
   { TBasicTimeCode }
 
@@ -163,10 +165,23 @@ function IdentTimeCodePattern(const TCStr: String; const AMajorSep,
   AMinorSep: Char): TTimeCodePattern;
 var
   Frac: String;
+  sa: TStringArray;
   S: String;
+  i: Integer;
 begin
   Result := tptInvalid;
   S := TCStr;
+
+  if AMajorSep = AMinorSep then
+  begin
+    sa := S.Split(AMajorSep);
+    i := Length(sa);
+    if (i < 1) or (i > 4) then Exit;
+    for i := 0 to i-1 do
+      if StrToIntDef(sa[i], -1) = -1 then Exit;
+    Exit(tptArray);
+  end;
+
   case S.CountChar(AMajorSep) of
   0:begin
     if StrToFloatDef(S.Replace(AMinorSep, DefaultFormatSettings.DecimalSeparator)
@@ -274,11 +289,33 @@ function StringToTimeCode(const S: String;
   const AMajorSep, AMinorSep: Char): TBasicTimeCode;
 var
   Pattern: TTimeCodePattern;
+  sa: TStringArray;
 begin
   Result.Reset;
   Pattern := IdentTimeCodePattern(S, AMajorSep, AMinorSep);
   case Pattern of
   tptInvalid: Exit;
+  tptArray: begin
+    sa := S.Split(AMajorSep);
+    case Length(sa) of
+    1: Result := DoubleToTimeCode(sa[0].ToInteger);
+    2: begin
+       Result.M := sa[0].ToInteger;
+       Result.S := sa[1].ToInteger;
+      end;
+    3: begin
+      Result.H := sa[0].ToInteger;
+      Result.M := sa[1].ToInteger;
+      Result.S := sa[2].ToInteger;
+      end;
+    4: begin
+      Result.H := sa[0].ToInteger;
+      Result.M := sa[1].ToInteger;
+      Result.S := sa[2].ToInteger;
+      Result.MS := ('0'+DefaultFormatSettings.DecimalSeparator+sa[3]).ToSingle;
+      end;
+    end;
+    end;
   tptDouble: Result := DoubleToTimeCode(S.Replace(AMinorSep
     , DefaultFormatSettings.DecimalSeparator).ToDouble);
   tpt01: begin
@@ -338,7 +375,7 @@ begin
     Result.S := S.Substring(6,2).ToInteger;
     end;
   end;
-  if S.Contains(AMinorSep) then
+  if (Pattern <> tptArray) and S.Contains(AMinorSep) then
     Result.MS := ('0'+DefaultFormatSettings.DecimalSeparator
       +S.Substring(S.IndexOf(AMinorSep)+1)).ToSingle;
   with Result do
@@ -392,8 +429,6 @@ begin
     raise Exception.Create('Invalid time separator!');
   if not (MinorSep in AllowedTimeCodeSeps) then
     raise Exception.Create('Invalid millisecond separator!');
-  if MajorSep = MinorSep then
-    raise Exception.Create('Similar values for time and millisecond separator!');
   FFormatSettings.MillisecondPrecision := MillisecondPrecision;
   FFormatSettings.MajorSep := MajorSep;
   FFormatSettings.MinorSep := MinorSep;
