@@ -50,9 +50,11 @@ type
     procedure DoShow; override;
   private
     FActions: TPanel;
+    FOnShow2: TNotifyEvent;
     procedure LoadDefaultControls;
     procedure UpdateFormSize;
   public
+    property OnShow2: TNotifyEvent read FOnShow2 write FOnShow2;
     constructor Create(AOwner: TComponent); override;
     constructor CreateNew(AOwner: TComponent; Num: Integer = 0); override;
   end;
@@ -68,6 +70,7 @@ implementation
 procedure TModalEditor.DoShow;
 begin
   inherited DoShow;
+  if Assigned(FOnShow2) then FOnShow2(Self);
   LoadDefaultControls;
   UpdateFormSize;
 end;
