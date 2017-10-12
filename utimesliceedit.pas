@@ -35,7 +35,7 @@
 interface
 
 uses
-  Classes, SysUtils, GraphType, Graphics, Forms, Controls, StdCtrls, Buttons,
+  Classes, SysUtils, GraphType, Graphics, Forms, Controls, StdCtrls,
   ExtCtrls, Spin, Clipbrd, uModalEditor, uTimeCode, uTimeSlice;
 
 type
@@ -45,7 +45,7 @@ type
   private
     FValue: TTimeSlice;
     FInputs1: TPanel;
-    FPaste1: TSpeedButton;
+    FPaste1: TButton;
     FHour1,
     FMinute1,
     FSecond1,
@@ -55,7 +55,7 @@ type
     Sep3,
     Title1: TLabel;
     FInputs2: TPanel;
-    FPaste2: TSpeedButton;
+    FPaste2: TButton;
     FHour2,
     FMinute2,
     FSecond2,
@@ -110,7 +110,7 @@ begin
   end;
 
   //FPaste1
-  FPaste1 := TSpeedButton.Create(Self);
+  FPaste1 := TButton.Create(Self);
   with FPaste1 do
   begin
     Parent := FInputs1;
@@ -229,7 +229,7 @@ begin
   end;
 
   //FPaste2
-  FPaste2 := TSpeedButton.Create(Self);
+  FPaste2 := TButton.Create(Self);
   with FPaste2 do
   begin
     Parent := FInputs2;

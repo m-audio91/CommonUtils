@@ -35,7 +35,7 @@ interface
 
 uses
   Classes, SysUtils, GraphType, Graphics, Forms, Controls, StdCtrls, ExtCtrls,
-  Spin, Buttons, Clipbrd, uModalEditor, uTimeCode;
+  Spin, Clipbrd, uModalEditor, uTimeCode;
 
 type
 { TTimeCodeEdit }
@@ -44,7 +44,7 @@ type
   private
     FValue: TTimeCode;
     FInputs: TPanel;
-    FPaste: TSpeedButton;
+    FPaste: TButton;
     FHour,
     FMinute,
     FSecond,
@@ -95,7 +95,7 @@ begin
   end;
 
   //FPaste
-  FPaste := TSpeedButton.Create(Self);
+  FPaste := TButton.Create(Self);
   with FPaste do
   begin
     Parent := FInputs;
