@@ -34,13 +34,32 @@ unit CommonGUIUtils;
 interface
 
 uses
-  Classes, SysUtils, Forms, LCLType, Graphics, Controls, IntfGraphics,
-  LazCanvas, extinterpolation, FPImage;
+  Classes, SysUtils, Forms, LCLType, Graphics, Controls, IntfGraphics, EditBtn,
+  LazCanvas, extinterpolation, FPImage, StdCtrls;
 
 procedure ShowError(const AMsg, ATitle: String);
 function ShowWarnYN(const AMsg, ATitle: String): boolean;
 procedure CopyImageList(AImgList: TImageList; ASourceImageList: TImageList;
   ADPI, ASourceDPI: Word; AMaskColor: TColor);
+
+type
+
+  { TCheckBoxUtils }
+
+  TCheckBoxUtils = class
+  public
+    procedure OnKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+  end;
+
+  { TFileNameEditHelper }
+
+  TFileNameEditHelper = class helper for TFileNameEdit
+  public
+    procedure ShowDialog;
+  end;
+
+var
+  CheckBoxUtils: TCheckBoxUtils;
 
 implementation
 
@@ -136,6 +155,32 @@ begin
   Canv.Free;
   IntfImg.Free;
   ResizedIntfImg.Free;
+end;
+
+{ TCheckBoxUtils }
+
+procedure TCheckBoxUtils.OnKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  {$ifdef windows}
+  if Key = VK_RETURN then
+  begin
+    with (Sender as TCheckBox) do
+    begin
+      if State = cbChecked then
+        State := cbUnchecked
+      else
+        State := cbChecked;
+    end;
+  end;
+  {$endif}
+end;
+
+{ TFileNameEditHelper }
+
+procedure TFileNameEditHelper.ShowDialog;
+begin
+  RunDialog;
 end;
 
 end.
