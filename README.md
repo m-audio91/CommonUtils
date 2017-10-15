@@ -1,6 +1,6 @@
 # CommonUtils
 last Free Pascal version used to compile was 3.1.1 trunk r37346
-last Lazarus version used to compile was 1.9 trunk r55938  
+last Lazarus version used to compile was 1.9 trunk r56034  
 may not work on older release versions.  
 all units in this repository are independent from outside. but may require each other. for example uTimeCodeEdit requires uModalEditor and uTimeCode.
 
@@ -62,6 +62,9 @@ A dialog form to work with anything you like. it's ChildSizing is set. It only c
 just create your controls after you've called create constructor and set parent and owner of your newly created controls to TModalEditor instance.  
 the layout is top to bottom so the creation order matters.  
 also see uTimeCodeEdit for an example of a descendant class.  
+
+## uNumEditFloat.pas  
+A simple dialog form to edit a float number.  
 
 ## uTimeCode.pas
 A TimeCode and TimeCode List parser.
