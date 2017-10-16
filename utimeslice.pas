@@ -106,6 +106,7 @@ type
     function Get(Index: Integer): TTimeSlice;
     procedure Put(Index: Integer; AValue: TTimeSlice);
     function GetCount: Integer;
+    procedure SetCount(AValue: Integer);
     function GetExtendedValueString: String;
     procedure SetExtendedValueString(AValue: String);
   public
@@ -120,7 +121,7 @@ type
     property Value: String read GetValueString write SetValueString;
     property InvertedValue: String read GetInvertedValue;
     property ExtendedValue: String read GetExtendedValueString write SetExtendedValueString;
-    property Count: Integer read GetCount;
+    property Count: Integer read GetCount write SetCount;
   end;
 
 const
@@ -301,13 +302,22 @@ end;
 procedure TTimeSliceList.Put(Index: Integer; AValue: TTimeSlice);
 begin
   CheckIndex(Index);
-  FList[Index] := AValue;
+  FSlice.Value.StartPos.ValueAsArray := AValue.Value.StartPos.ValueAsArray;
+  FSlice.Value.EndPos.ValueAsArray := AValue.Value.EndPos.ValueAsArray;
+  FList[Index] := FSlice;
 end;
 
 function TTimeSliceList.GetCount: Integer;
 begin
   if not CheckIncremental then Exit(0);
   Result := Length(FList);
+end; 
+
+procedure TTimeSliceList.SetCount(AValue: Integer);
+begin
+  if AValue < 0 then
+    AValue := 0;
+  SetLength(FList, AValue);
 end;
 
 procedure TTimeSliceList.LoadFromFile(AFile: String);
