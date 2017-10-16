@@ -74,7 +74,7 @@ implementation
 
 function IsEmptyStr(const AStr: String): Boolean;
 begin
-  Result := Astr.Trim([#32,#13,#10]) = EmptyStr;
+  Result := Astr.Trim([#7,#8,#9,#10,#11,#12,#13,#32,#255]) = EmptyStr;
 end;
 
 function Escape(const S: String; const ToEscape: String; const EscapeTo: String
