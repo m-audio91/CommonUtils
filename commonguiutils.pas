@@ -51,13 +51,6 @@ type
     procedure OnKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   end;
 
-  { TFileNameEditHelper }
-
-  TFileNameEditHelper = class helper for TFileNameEdit
-  public
-    procedure ShowDialog;
-  end;
-
 var
   CheckBoxUtils: TCheckBoxUtils;
 
@@ -174,13 +167,6 @@ begin
     end;
   end;
   {$endif}
-end;
-
-{ TFileNameEditHelper }
-
-procedure TFileNameEditHelper.ShowDialog;
-begin
-  RunDialog;
 end;
 
 end.
