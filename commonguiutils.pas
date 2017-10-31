@@ -42,18 +42,6 @@ function ShowWarnYN(const AMsg, ATitle: String): boolean;
 procedure CopyImageList(AImgList: TImageList; ASourceImageList: TImageList;
   ADPI, ASourceDPI: Word; AMaskColor: TColor);
 
-type
-
-  { TCheckBoxUtils }
-
-  TCheckBoxUtils = class
-  public
-    procedure OnKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-  end;
-
-var
-  CheckBoxUtils: TCheckBoxUtils;
-
 implementation
 
 procedure ShowError(const AMsg, ATitle: String);
@@ -148,25 +136,6 @@ begin
   Canv.Free;
   IntfImg.Free;
   ResizedIntfImg.Free;
-end;
-
-{ TCheckBoxUtils }
-
-procedure TCheckBoxUtils.OnKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-  {$ifdef windows}
-  if Key = VK_RETURN then
-  begin
-    with (Sender as TCheckBox) do
-    begin
-      if State = cbChecked then
-        State := cbUnchecked
-      else
-        State := cbChecked;
-    end;
-  end;
-  {$endif}
 end;
 
 end.
