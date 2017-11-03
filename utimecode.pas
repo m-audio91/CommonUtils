@@ -84,6 +84,9 @@ type
     MillisecondPrecision: Word;
     MajorSep: Char;
     MinorSep: Char;
+    SourceFPS: Double;    //  \
+    HasFrame: Boolean;    //   for string parsing only
+    IsFrame: Boolean;     //  /
   end;
 
   { TTimeCode }
@@ -109,7 +112,10 @@ type
   public
     procedure Initialize(MillisecondPrecision: Word = DefaultMillisecondPrecision;
       MajorSep: Char = DefaultTimeSep;
-      MinorSep: Char = DefaultMillisecSep); overload;
+      MinorSep: Char = DefaultMillisecSep;
+      SourceFPS: Double = 25;
+      HasFrame: Boolean = False;
+      IsFrame: Boolean = False); overload;
     procedure Initialize(const AFormatSettings: TTimeCodeFormatSettings); overload;
     property Value: TBasicTimeCode read FValue write FValue;
     property ValueAsString: String read GetValueString write SetValueString;
@@ -144,7 +150,8 @@ type
     procedure Put(Index: Integer; AValue: TTimeCode);
     function GetCount: Integer;
   public
-    procedure Initialize(MillisecondPrecision: Word; MajorSep, MinorSep: Char); overload;
+    procedure Initialize(MillisecondPrecision: Word; MajorSep, MinorSep: Char;
+      SourceFPS: Double; HasFrame, IsFrame: Boolean); overload;
     procedure Initialize(const AFormatSettings: TTimeCodeFormatSettings); overload;
     procedure LoadFromFile(AFile: String);
     property Incremental: Boolean read CheckIncremental;
@@ -157,7 +164,10 @@ const
   DefaultTimeCodeFormatSettings: TTimeCodeFormatSettings = (
     MillisecondPrecision: DefaultMillisecondPrecision;
     MajorSep: DefaultTimeSep;
-    MinorSep: DefaultMillisecSep;);
+    MinorSep: DefaultMillisecSep;
+    SourceFPS: 25;
+    HasFrame: False;
+    IsFrame: False;);
 
 implementation
 
@@ -238,11 +248,32 @@ begin
   end;
 end;
 
+function FramePartToMillisec(FF, FPS: Double): Double;
+begin
+  if FF < 0 then
+    FF := 0;
+  if FPS < 0.0001 then
+    FPS := 0.0001;
+  Result := FF;
+  ForceInRange(Result,0,FPS);
+  Result := FloatRound((1000/FPS)*Result, 3);
+  ForceInRange(Result,0,999);
+end;
+
+function FramePosToSeconds(P: Integer; FPS: Double): Double;
+begin
+  if P < 0 then
+    P := 0;
+  if FPS < 0.0001 then
+    FPS := 0.0001;
+  Result := P/FPS;
+end;
+
 function TimeCodeToDouble(TC: TBasicTimeCode;
-  const AMilisecondPrecision: Word): Double;
+  const AMillisecondPrecision: Word): Double;
 begin
   Result := (TC.H*3600) + (TC.M*60) + TC.S;
-  if AMilisecondPrecision > 0 then
+  if AMillisecondPrecision > 0 then
     Result := Result  + TC.MS;
 end;
 
@@ -265,38 +296,45 @@ begin
   end;
 end;
 
-function TimeCodeToString(TC: TBasicTimeCode; const AMajorSep,
-  AMinorSep: Char; AMilisecondPrecision: Word): String;
+function TimeCodeToString(TC: TBasicTimeCode;
+  const AFormat: TTimeCodeFormatSettings): String;
 var
   FST: TFormatSettings;
 begin
   with TC do
   begin
     Result := StrForceLength(H.ToString, 2, '0');
-    Result := Result + AMajorSep + StrForceLength(M.ToString, 2, '0');
-    Result := Result + AMajorSep + StrForceLength(S.ToString, 2, '0');
-    if AMilisecondPrecision > 0 then
+    Result := Result + AFormat.MajorSep + StrForceLength(M.ToString, 2, '0');
+    Result := Result + AFormat.MajorSep + StrForceLength(S.ToString, 2, '0');
+    if AFormat.MillisecondPrecision > 0 then
     begin
       FST := Default(TFormatSettings);
-      FST.DecimalSeparator := AMinorSep;
+      FST.DecimalSeparator := AFormat.MinorSep;
       Result := Result
-        +MS.ToString(ffFixed, 1, AMilisecondPrecision, FST).Substring(1);
+        +MS.ToString(ffFixed, 1, AFormat.MillisecondPrecision, FST).Substring(1);
     end;
   end;
 end;
 
 function StringToTimeCode(const S: String;
-  const AMajorSep, AMinorSep: Char): TBasicTimeCode;
+  const AFormat: TTimeCodeFormatSettings): TBasicTimeCode;
 var
   Pattern: TTimeCodePattern;
   sa: TStringArray;
 begin
   Result.Reset;
-  Pattern := IdentTimeCodePattern(S, AMajorSep, AMinorSep);
+  if AFormat.IsFrame then
+  begin
+    Result := DoubleToTimeCode(FramePosToSeconds(Round(StrToFloatDef(
+      S.Replace(AFormat.MinorSep,DefaultFormatSettings.DecimalSeparator), 0))
+      ,AFormat.SourceFPS));
+    Exit;
+  end;
+  Pattern := IdentTimeCodePattern(S, AFormat.MajorSep, AFormat.MinorSep);
   case Pattern of
   tptInvalid: Exit;
   tptArray: begin
-    sa := S.Split(AMajorSep);
+    sa := S.Split(AFormat.MajorSep);
     case Length(sa) of
     1: Result := DoubleToTimeCode(sa[0].ToInteger);
     2: begin
@@ -312,12 +350,12 @@ begin
       Result.H := sa[0].ToInteger;
       Result.M := sa[1].ToInteger;
       Result.S := sa[2].ToInteger;
-      Result.MS := ('0'+DefaultFormatSettings.DecimalSeparator+sa[3]).ToSingle;
+      Result.MS := sa[3].ToInteger/NMultiplier(AFormat.MillisecondPrecision);
       end;
     end;
     end;
-  tptDouble: Result := DoubleToTimeCode(S.Replace(AMinorSep
-    , DefaultFormatSettings.DecimalSeparator).ToDouble);
+  tptDouble: Result := DoubleToTimeCode(S.Replace(AFormat.MinorSep,
+    DefaultFormatSettings.DecimalSeparator).ToDouble);
   tpt01: begin
     Result.M := S.Substring(0,1).ToInteger;
     Result.S := S.Substring(2,1).ToInteger;
@@ -375,9 +413,14 @@ begin
     Result.S := S.Substring(6,2).ToInteger;
     end;
   end;
-  if (Pattern <> tptArray) and S.Contains(AMinorSep) then
-    Result.MS := ('0'+DefaultFormatSettings.DecimalSeparator
-      +S.Substring(S.IndexOf(AMinorSep)+1)).ToSingle;
+
+  if (Pattern <> tptArray) and S.Contains(AFormat.MinorSep) then
+    Result.MS := S.Substring(S.IndexOf(AFormat.MinorSep)+1).ToInteger
+      /NMultiplier(AFormat.MillisecondPrecision);
+
+  if AFormat.HasFrame and (Result.MS > 0) then
+    Result.MS := FramePartToMillisec(Result.MS, AFormat.SourceFPS);
+
   with Result do
   begin
     if (H > 59) or (M > 59) or (S > 59) then
@@ -386,26 +429,26 @@ begin
 end;
 
 function TimeCodeToArray(TC: TBasicTimeCode;
-  AMilisecondMultiplier: Word): TBasicTimeCodeArray;
+  AMillisecondMultiplier: Word): TBasicTimeCodeArray;
 begin
   Result[0] := TC.H;
   Result[1] := TC.M;
   Result[2] := TC.S;
-  if AMilisecondMultiplier > 1 then
-    Result[3] := Round(TC.MS * AMilisecondMultiplier)
+  if AMillisecondMultiplier > 1 then
+    Result[3] := Round(TC.MS * AMillisecondMultiplier)
   else
     Result[3] := 0;
 end;
 
 function ArrayToTimeCode(const TCA: TBasicTimeCodeArray;
-  AMilisecondMultiplier: Word): TBasicTimeCode;
+  AMillisecondMultiplier: Word): TBasicTimeCode;
 begin
   Result.Reset;
   Result.H := TCA[0];
   Result.M := TCA[1];
   Result.S := TCA[2];
-  if AMilisecondMultiplier > 1 then
-    Result.MS := TCA[3] / AMilisecondMultiplier
+  if AMillisecondMultiplier > 1 then
+    Result.MS := TCA[3] / AMillisecondMultiplier
   else
     Result.MS := 0;
 end;
@@ -423,22 +466,28 @@ end;
 { TTimeCode }
 
 procedure TTimeCode.Initialize(MillisecondPrecision: Word; MajorSep,
-  MinorSep: Char);
+  MinorSep: Char; SourceFPS: Double; HasFrame, IsFrame: Boolean);
 begin
   if not (MajorSep in AllowedTimeCodeSeps) then
     raise Exception.Create('Invalid time separator!');
   if not (MinorSep in AllowedTimeCodeSeps) then
     raise Exception.Create('Invalid millisecond separator!');
+  if SourceFPS <= 0 then
+    raise Exception.Create('FPS should be more than zero!');
   FFormatSettings.MillisecondPrecision := MillisecondPrecision;
   FFormatSettings.MajorSep := MajorSep;
   FFormatSettings.MinorSep := MinorSep;
+  FFormatSettings.SourceFPS := SourceFPS;
+  FFormatSettings.HasFrame := HasFrame;
+  FFormatSettings.IsFrame := IsFrame;
   FInitialized := 'Yes!';
 end;
 
 procedure TTimeCode.Initialize(const AFormatSettings: TTimeCodeFormatSettings);
 begin
   Initialize(AFormatSettings.MillisecondPrecision, AFormatSettings.MajorSep,
-    AFormatSettings.MinorSep);
+    AFormatSettings.MinorSep, AFormatSettings.SourceFPS, AFormatSettings.HasFrame,
+    AFormatSettings.IsFrame);
 end;
 
 procedure TTimeCode.InitCheck;
@@ -458,14 +507,16 @@ end;
 function TTimeCode.GetValueString: String;
 begin
   InitCheck;
-  Result := TimeCodeToString(FValue, FFormatSettings.MajorSep,
-    FFormatSettings.MinorSep, FFormatSettings.MillisecondPrecision);
+  Result := TimeCodeToString(FValue, FFormatSettings);
 end;
 
 procedure TTimeCode.SetValueString(const AValue: String);
 begin
   InitCheck;
-  FValue := StringToTimeCode(AValue, FFormatSettings.MajorSep, FFormatSettings.MinorSep);
+  if ((FFormatSettings.HasFrame) and (FFormatSettings.MillisecondPrecision < 3))
+  or ((FFormatSettings.IsFrame) and (FFormatSettings.MillisecondPrecision < 3)) then
+    FFormatSettings.MillisecondPrecision := 3;
+  FValue := StringToTimeCode(AValue, FFormatSettings);
 end;
 
 function TTimeCode.GetValueDouble: Double;
@@ -501,11 +552,9 @@ end;
 
 function TTimeCode.GetValueWithDelayString: String;
 begin
-  Result := TimeCodeToString(TConstantTimeCodes.Min.Value, FFormatSettings.MajorSep,
-      FFormatSettings.MinorSep, FFormatSettings.MillisecondPrecision);
+  Result := TimeCodeToString(TConstantTimeCodes.Min.Value, FFormatSettings);
   if ValueAsDouble + FDelay >= 0 then
-    Result := TimeCodeToString(ValueWithDelay, FFormatSettings.MajorSep,
-      FFormatSettings.MinorSep, FFormatSettings.MillisecondPrecision);
+    Result := TimeCodeToString(ValueWithDelay, FFormatSettings);
 end;
 
 function TTimeCode.GetValueWithDelayDouble: Double;
@@ -544,9 +593,10 @@ end;
 { TTimeCodeList }
 
 procedure TTimeCodeList.Initialize(MillisecondPrecision: Word; MajorSep,
-  MinorSep: Char);
+  MinorSep: Char; SourceFPS: Double; HasFrame, IsFrame: Boolean);
 begin
-  FTimeCode.Initialize(MillisecondPrecision, MajorSep, MinorSep);
+  FTimeCode.Initialize(MillisecondPrecision, MajorSep, MinorSep, SourceFPS,
+    HasFrame, IsFrame);
 end;
 
 procedure TTimeCodeList.Initialize(
