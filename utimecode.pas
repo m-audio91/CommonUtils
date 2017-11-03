@@ -326,8 +326,8 @@ begin
   if AFormat.IsFrame then
   begin
     Result := DoubleToTimeCode(FramePosToSeconds(StrToFloatDef(
-      S.Replace(AFormat.MinorSep,DefaultFormatSettings.DecimalSeparator), 0))
-      ,AFormat.SourceFPS);
+      S.Replace(AFormat.MinorSep,DefaultFormatSettings.DecimalSeparator), 0)
+      ,AFormat.SourceFPS));
     Exit;
   end;
   Pattern := IdentTimeCodePattern(S, AFormat.MajorSep, AFormat.MinorSep);
