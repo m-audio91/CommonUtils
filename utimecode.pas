@@ -260,7 +260,7 @@ begin
   ForceInRange(Result,0,999);
 end;
 
-function FramePosToSeconds(P: Integer; FPS: Double): Double;
+function FramePosToSeconds(P, FPS: Double): Double;
 begin
   if P < 0 then
     P := 0;
@@ -325,9 +325,9 @@ begin
   Result.Reset;
   if AFormat.IsFrame then
   begin
-    Result := DoubleToTimeCode(FramePosToSeconds(Round(StrToFloatDef(
+    Result := DoubleToTimeCode(FramePosToSeconds(StrToFloatDef(
       S.Replace(AFormat.MinorSep,DefaultFormatSettings.DecimalSeparator), 0))
-      ,AFormat.SourceFPS));
+      ,AFormat.SourceFPS);
     Exit;
   end;
   Pattern := IdentTimeCodePattern(S, AFormat.MajorSep, AFormat.MinorSep);
