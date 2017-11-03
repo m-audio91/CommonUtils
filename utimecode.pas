@@ -629,7 +629,8 @@ end;
 procedure TTimeCodeList.Put(Index: Integer; AValue: TTimeCode);
 begin
   CheckIndex(Index);
-  FList[Index] := AValue;
+  FTimeCode.Value := AValue.Value;
+  FList[Index] := FTimeCode;
 end;
 
 function TTimeCodeList.GetCount: Integer;
