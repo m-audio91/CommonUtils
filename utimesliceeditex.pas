@@ -35,7 +35,7 @@ interface
 
 uses
   Classes, SysUtils, GraphType, Graphics, Forms, Controls, StdCtrls,
-  ExtCtrls, Spin, Clipbrd, uModalEditor, uTimeCode, uTimeSlice;
+  ExtCtrls, Spin, Clipbrd, Menus, uModalEditor, uTimeCode, uTimeSlice;
 
 type
 { TTimeSliceEditEx }
@@ -66,12 +66,15 @@ type
     FInputs3: TPanel;
     FDelay: TFloatSpinEdit;
     Title3: TLabel;
+    FMillisecPopup: TPopupMenu;
+    FMillisecConvertMI: TMenuItem;
     FPasteFormat: TTimeCodeFormatSettings;
     procedure LoadControls(Sender: TObject);
     procedure OnClosing(Sender: TObject; var CanClose: Boolean);
     procedure OnPasteClick(Sender: TObject);
     function GetValue: String;
     procedure SetValue(const AValue: String);
+    procedure OnMillisecConvertMIClick(Sender: TObject);
   public
     property Value: String read GetValue write SetValue;
     property PasteFormat: TTimeCodeFormatSettings read FPasteFormat write FPasteFormat;
@@ -88,6 +91,7 @@ resourcestring
   rsTSEXSecond = 'ثانیه';
   rsTSEXMillisecond = 'هزارم ثانیه';
   rsTSEPaste = 'چسباندن';
+  rsConvertFFtoMS = 'تبدیل به هزارم ثانیه';
 
 implementation
 
@@ -95,6 +99,13 @@ implementation
 
 procedure TTimeSliceEditEx.LoadControls(Sender: TObject);
 begin
+  //FMillisecConvertMI
+  FMillisecConvertMI := NewItem(rsConvertFFtoMS,0,False,True,
+    @OnMillisecConvertMIClick,0,'');
+
+  //FMillisecPopup
+  FMillisecPopup := NewPopupMenu(Self,'',paLeft,True,[FMillisecConvertMI]);
+
   //FInputs1: TPanel;
   FInputs1 := TPanel.Create(Self);
   with FInputs1 do
@@ -203,6 +214,8 @@ begin
     Hint := rsTSEXMillisecond;
     Constraints.MinWidth := Width*2;
     Value := FValue.Value.StartPos.ValueAsArray[3];
+    if FPasteFormat.HasFrame then
+      PopupMenu := FMillisecPopup;
   end;
 
   //Title1
@@ -322,6 +335,8 @@ begin
     Hint := rsTSEXMillisecond;
     Constraints.MinWidth := Width*2;
     Value := FValue.Value.EndPos.ValueAsArray[3];
+    if FPasteFormat.HasFrame then
+      PopupMenu := FMillisecPopup;
   end;
 
   //Title2
@@ -428,6 +443,30 @@ end;
 procedure TTimeSliceEditEx.SetValue(const AValue: String);
 begin
   FValue.ValueAsStringEx := AValue;
+end;
+
+procedure TTimeSliceEditEx.OnMillisecConvertMIClick(Sender: TObject);
+var
+  tc: TTimeCode;
+  ta: TBasicTimeCodeArray;
+  ms: ^TSpinEdit;
+begin
+  tc.TimeCodeFormat := FPasteFormat;
+  ta := TConstantTimeCodes.MinAsArray;
+  ms := nil;
+  if (FMillisecPopup.PopupComponent as TControl).Parent = FInputs1 then
+    ms := @FMilisecond1
+  else if (FMillisecPopup.PopupComponent as TControl).Parent = FInputs2 then
+    ms := @FMilisecond2;
+
+  if Assigned(ms) then
+  begin
+    ta[3] := ms^.Value;
+    if (ta[3] > FPasteFormat.SourceFPS+(FPasteFormat.SourceFPS/2)) then Exit;
+    tc.ValueAsArray := ta;
+    tc.ValueAsString := tc.ValueAsString;
+    ms^.Value := tc.ValueAsArray[3];
+  end;
 end;
 
 constructor TTimeSliceEditEx.CreateNew(AOwner: TComponent; Num: Integer);
