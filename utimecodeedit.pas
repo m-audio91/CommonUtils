@@ -48,7 +48,7 @@ type
     FHour,
     FMinute,
     FSecond,
-    FMilisecond: TSpinEdit;
+    FMillisecond: TSpinEdit;
     Sep1,
     Sep2,
     Sep3: TLabel;
@@ -181,9 +181,9 @@ begin
     Caption := '.';
   end;
 
-  //FMilisecond
-  FMilisecond := TSpinEdit.Create(Self);
-  with FMilisecond do
+  //FMillisecond
+  FMillisecond := TSpinEdit.Create(Self);
+  with FMillisecond do
   begin
     Parent := FInputs;
     MinValue := 0;
@@ -205,7 +205,7 @@ begin
   tc[0] := FHour.Value;
   tc[1] := FMinute.Value;
   tc[2] := FSecond.Value;
-  tc[3] := FMilisecond.Value;
+  tc[3] := FMillisecond.Value;
   FValue.ValueAsArray := tc;
   CanClose := True;
 end;
@@ -219,7 +219,7 @@ begin
   FHour.Value := tc.ValueAsArray[0];
   FMinute.Value := tc.ValueAsArray[1];
   FSecond.Value := tc.ValueAsArray[2];
-  FMilisecond.Value := tc.ValueAsArray[3];
+  FMillisecond.Value := tc.ValueAsArray[3];
 end;
 
 function TTimeCodeEdit.GetValue: String;
@@ -240,11 +240,11 @@ begin
   tc.TimeCodeFormat := FPasteFormat;
   ta := TConstantTimeCodes.MinAsArray;
 
-  ta[3] := FMilisecond.Value;
+  ta[3] := FMillisecond.Value;
   if (ta[3] > FPasteFormat.SourceFPS+(FPasteFormat.SourceFPS/2)) then Exit;
   tc.ValueAsArray := ta;
   tc.ValueAsString := tc.ValueAsString;
-  FMilisecond.Value := tc.ValueAsArray[3];
+  FMillisecond.Value := tc.ValueAsArray[3];
 end;
 
 constructor TTimeCodeEdit.CreateNew(AOwner: TComponent; Num: Integer);

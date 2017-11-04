@@ -49,7 +49,7 @@ type
     FHour1,
     FMinute1,
     FSecond1,
-    FMilisecond1: TSpinEdit;
+    FMillisecond1: TSpinEdit;
     Sep1,
     Sep2,
     Sep3,
@@ -59,7 +59,7 @@ type
     FHour2,
     FMinute2,
     FSecond2,
-    FMilisecond2: TSpinEdit;
+    FMillisecond2: TSpinEdit;
     Sep4,
     Sep5,
     Sep6,
@@ -200,9 +200,9 @@ begin
     Layout := tlBottom;
   end;
 
-  //FMilisecond1
-  FMilisecond1 := TSpinEdit.Create(Self);
-  with FMilisecond1 do
+  //FMillisecond1
+  FMillisecond1 := TSpinEdit.Create(Self);
+  with FMillisecond1 do
   begin
     Parent := FInputs1;
     MinValue := 0;
@@ -321,9 +321,9 @@ begin
     Layout := tlBottom;
   end;
 
-  //FMilisecond2
-  FMilisecond2 := TSpinEdit.Create(Self);
-  with FMilisecond2 do
+  //FMillisecond2
+  FMillisecond2 := TSpinEdit.Create(Self);
+  with FMillisecond2 do
   begin
     Parent := FInputs2;
     MinValue := 0;
@@ -354,13 +354,13 @@ begin
   tc[0] := FHour1.Value;
   tc[1] := FMinute1.Value;
   tc[2] := FSecond1.Value;
-  tc[3] := FMilisecond1.Value;
+  tc[3] := FMillisecond1.Value;
   FValue.Value.StartPos.ValueAsArray := tc;
 
   tc[0] := FHour2.Value;
   tc[1] := FMinute2.Value;
   tc[2] := FSecond2.Value;
-  tc[3] := FMilisecond2.Value;
+  tc[3] := FMillisecond2.Value;
   FValue.Value.EndPos.ValueAsArray := tc;
 
   if not FValue.Valid then
@@ -380,13 +380,13 @@ begin
     FHour1.Value := tc.ValueAsArray[0];
     FMinute1.Value := tc.ValueAsArray[1];
     FSecond1.Value := tc.ValueAsArray[2];
-    FMilisecond1.Value := tc.ValueAsArray[3];
+    FMillisecond1.Value := tc.ValueAsArray[3];
     end;
   'FPaste2': begin
     FHour2.Value := tc.ValueAsArray[0];
     FMinute2.Value := tc.ValueAsArray[1];
     FSecond2.Value := tc.ValueAsArray[2];
-    FMilisecond2.Value := tc.ValueAsArray[3];
+    FMillisecond2.Value := tc.ValueAsArray[3];
     end;
   end;
 end;
@@ -411,9 +411,9 @@ begin
   ta := TConstantTimeCodes.MinAsArray;
   ms := nil;
   if (FMillisecPopup.PopupComponent as TControl).Parent = FInputs1 then
-    ms := @FMilisecond1
+    ms := @FMillisecond1
   else if (FMillisecPopup.PopupComponent as TControl).Parent = FInputs2 then
-    ms := @FMilisecond2;
+    ms := @FMillisecond2;
 
   if Assigned(ms) then
   begin
