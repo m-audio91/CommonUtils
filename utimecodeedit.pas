@@ -35,7 +35,7 @@ interface
 
 uses
   Classes, SysUtils, GraphType, Graphics, Forms, Controls, StdCtrls, ExtCtrls,
-  Spin, Clipbrd, uModalEditor, uTimeCode;
+  Spin, Clipbrd, Menus, uModalEditor, uTimeCode;
 
 type
 { TTimeCodeEdit }
@@ -52,12 +52,15 @@ type
     Sep1,
     Sep2,
     Sep3: TLabel;
+    FMillisecPopup: TPopupMenu;
+    FMillisecConvertMI: TMenuItem;
     FPasteFormat: TTimeCodeFormatSettings;
     procedure LoadControls(Sender: TObject);
     procedure OnClosing(Sender: TObject; var CanClose: Boolean);
     procedure OnPasteClick(Sender: TObject);
     function GetValue: String;
     procedure SetValue(const AValue: String);
+    procedure OnMillisecConvertMIClick(Sender: TObject);
   public
     property Value: String read GetValue write SetValue;
     property PasteFormat: TTimeCodeFormatSettings read FPasteFormat write FPasteFormat;
@@ -71,6 +74,7 @@ resourcestring
   rsTCESecond = 'ثانیه';
   rsTCEMillisecond = 'هزارم ثانیه';
   rsTCEPaste = 'چسباندن';
+  rsConvertFFtoMS = 'تبدیل به هزارم ثانیه';
 
 implementation
 
@@ -78,6 +82,13 @@ implementation
 
 procedure TTimeCodeEdit.LoadControls(Sender: TObject);
 begin
+  //FMillisecConvertMI
+  FMillisecConvertMI := NewItem(rsConvertFFtoMS,0,False,True,
+    @OnMillisecConvertMIClick,0,'');
+
+  //FMillisecPopup
+  FMillisecPopup := NewPopupMenu(Self,'',paLeft,True,[FMillisecConvertMI]);
+
   //FInputs: TPanel;
   FInputs := TPanel.Create(Self);
   with FInputs do
@@ -182,6 +193,8 @@ begin
     Hint := rsTCEMillisecond;
     Constraints.MinWidth := Width*2;
     Value := FValue.ValueAsArray[3];
+    if FPasteFormat.HasFrame then
+      PopupMenu := FMillisecPopup;
   end;
 end;
 
@@ -217,6 +230,21 @@ end;
 procedure TTimeCodeEdit.SetValue(const AValue: String);
 begin
   FValue.ValueAsString := AValue;
+end; 
+
+procedure TTimeCodeEdit.OnMillisecConvertMIClick(Sender: TObject);
+var
+  tc: TTimeCode;
+  ta: TBasicTimeCodeArray;
+begin
+  tc.TimeCodeFormat := FPasteFormat;
+  ta := TConstantTimeCodes.MinAsArray;
+
+  ta[3] := FMilisecond.Value;
+  if (ta[3] > FPasteFormat.SourceFPS+(FPasteFormat.SourceFPS/2)) then Exit;
+  tc.ValueAsArray := ta;
+  tc.ValueAsString := tc.ValueAsString;
+  FMilisecond.Value := tc.ValueAsArray[3];
 end;
 
 constructor TTimeCodeEdit.CreateNew(AOwner: TComponent; Num: Integer);
