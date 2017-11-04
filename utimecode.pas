@@ -134,6 +134,8 @@ type
   TConstantTimeCodes = class
     class function Min: TTimeCode;
     class function Max: TTimeCode;
+    class function MinAsArray: TBasicTimeCodeArray;
+    class function MaxAsArray: TBasicTimeCodeArray;
   end;
 
   { TTimeCodeList }
@@ -588,6 +590,22 @@ begin
   TC.S := 59;
   TC.MS := 0.999;
   Result.Value := TC;
+end;
+
+class function TConstantTimeCodes.MinAsArray: TBasicTimeCodeArray;
+begin
+  Result[0] := 0;
+  Result[1] := 0;
+  Result[2] := 0;
+  Result[3] := 0;
+end;
+
+class function TConstantTimeCodes.MaxAsArray: TBasicTimeCodeArray;
+begin
+  Result[0] := 59;
+  Result[1] := 59;
+  Result[2] := 59;
+  Result[3] := 999;
 end;
 
 { TTimeCodeList }
