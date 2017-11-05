@@ -421,7 +421,9 @@ begin
       /NMultiplier(AFormat.MillisecondPrecision);
 
   if AFormat.HasFrame and (Result.MS > 0) then
-    Result.MS := FramePartToMillisec(Result.MS, AFormat.SourceFPS);
+    Result.MS := FramePartToMillisec(
+      Result.MS*NMultiplier(AFormat.MillisecondPrecision), AFormat.SourceFPS)
+      /NMultiplier(AFormat.MillisecondPrecision);
 
   with Result do
   begin
