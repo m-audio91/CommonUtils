@@ -43,8 +43,10 @@ type
   { TTimeCodeFormatDialog }
 
   TTimeCodeFormatDialog = class(TModalEditor)
-  private
+  protected
     FValue: TTimeCode;
+    procedure OnFormatChange(Sender: TObject); virtual;
+  private
     FInputs: TPanel;
     FMajorSep: TComboBox;
     FMinorSep: TComboBox;
@@ -52,7 +54,6 @@ type
     FSample: TLabel;
     FFileSample: TLabel;
     procedure LoadControls(Sender: TObject);
-    procedure OnChanging(Sender: TObject);
     procedure ShowFileSample;
   public
     property Value: TTimeCode read FValue;
@@ -99,7 +100,7 @@ begin
     ItemIndex := Items.IndexOf(DefaultTimeSep);
     Style := csDropDownList;
     Hint := rsTimeSep;
-    OnChange := @OnChanging;
+    OnChange := @OnFormatChange;
   end;
 
   //FMinorSep
@@ -112,7 +113,7 @@ begin
     ItemIndex := Items.IndexOf(DefaultMillisecSep);
     Style := csDropDownList;
     Hint := rsMillisecSep;
-    OnChange := @OnChanging;
+    OnChange := @OnFormatChange;
   end;
 
   //FMilisecondPrecision
@@ -127,7 +128,7 @@ begin
     Hint := rsMillisecPrecision;
     Constraints.MinWidth := Trunc(Width*1.5);
     Value := DefaultMillisecondPrecision;
-    OnChange := @OnChanging;
+    OnChange := @OnFormatChange;
   end;
 
   //FSample
@@ -150,7 +151,7 @@ begin
   ShowFileSample;
 end;
 
-procedure TTimeCodeFormatDialog.OnChanging(Sender: TObject);
+procedure TTimeCodeFormatDialog.OnFormatChange(Sender: TObject);
 begin
   try
     FValue.Initialize(FMilisecondPrecision.Value,
