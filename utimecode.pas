@@ -356,8 +356,8 @@ begin
       end;
     end;
     end;
-  tptDouble: Result := DoubleToTimeCode(S.Replace(AFormat.MinorSep,
-    DefaultFormatSettings.DecimalSeparator).ToDouble);
+  tptDouble: Exit(DoubleToTimeCode(S.Replace(AFormat.MinorSep,
+    DefaultFormatSettings.DecimalSeparator).ToDouble));
   tpt01: begin
     Result.M := S.Substring(0,1).ToInteger;
     Result.S := S.Substring(2,1).ToInteger;
@@ -426,10 +426,8 @@ begin
       /NMultiplier(AFormat.MillisecondPrecision);
 
   with Result do
-  begin
     if (H > 59) or (M > 59) or (S > 59) then
       Reset;
-  end;
 end;
 
 function TimeCodeToArray(TC: TBasicTimeCode;
