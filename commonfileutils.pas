@@ -38,7 +38,7 @@ uses
 
 function GenFileName(const SourceFile: String; const SomeStr: String = '';
   const NewExtension: String = ''; IncludePath: Boolean = true;
-  const NewPath: String = ''): String;
+  const NewPath: String = ''; AllowIdentical: Boolean = false): String;
 procedure AdjustFileLineBreaks(const F: String);
 function TryDirectoryIsWritable(const Dir: String): Boolean;
 function OpenFiles(Multi: Boolean = False; const ATitle: String = '';
@@ -49,7 +49,7 @@ implementation
 
 function GenFileName(const SourceFile: String; const SomeStr: String;
   const NewExtension: String; IncludePath: Boolean;
-  const NewPath: String): String;
+  const NewPath: String; AllowIdentical: Boolean): String;
 var
   SourcePath, SourceExt: String;
 begin
@@ -70,7 +70,7 @@ begin
     Result := Result + NewExtension
   else
     Result := Result + SourceExt;
-  if CompareText(Result, SourceFile) = 0 then
+  if not AllowIdentical and (CompareText(Result, SourceFile) = 0) then
     raise Exception.Create('Identical names!');
 end;
 
