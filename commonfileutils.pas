@@ -34,7 +34,7 @@ unit CommonFileUtils;
 interface
 
 uses
-  Classes, SysUtils, LazFileUtils, Dialogs;
+  Classes, SysUtils, FileUtil, LazFileUtils, Dialogs;
 
 function GenFileName(const SourceFile: String; const SomeStr: String = '';
   const NewExtension: String = ''; IncludePath: Boolean = true;
@@ -91,12 +91,27 @@ begin
 end;
 
 function TryDirectoryIsWritable(const Dir: String): Boolean;
+var
+  sl: TStringList;
+  i: Integer;
 begin
   try
     Result := DirectoryIsWritable(Dir);
   Except
     Result := false;
   end;
+  {$ifdef unix}
+  //delete any temp file left
+  sl := TStringList.Create;
+  try
+    FindAllFiles(sl, Dir, 'tstperm*.tmp', False);
+    if sl.Count > 0 then
+      for i := sl.Count-1 downto 0 do
+        DeleteFile(sl.Strings[i]);
+  finally
+    sl.Free;
+  end;
+  {$endif}
 end;
 
 function OpenFiles(Multi: Boolean; const ATitle: String;
