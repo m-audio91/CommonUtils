@@ -1,6 +1,6 @@
 # CommonUtils
-last Free Pascal version used to compile was 3.1.1 trunk r37346
-last Lazarus version used to compile was 1.9 trunk r56034  
+last Free Pascal version used to compile was 3.1.1 trunk r39236
+last Lazarus version used to compile was 1.9 trunk r58287  
 may not work on older release versions.  
 all units in this repository are independent from outside. but may require each other. for example uTimeCodeEdit requires uModalEditor and uTimeCode.
 

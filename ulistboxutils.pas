@@ -2,7 +2,7 @@ unit uListBoxUtils;
 { Utility to work with standard (Check)ListBox. DragDrop sorting items, delete,
   save, load, etc all supporting multi-select.
 
-  Copyright (C) 2017 Mohammadreza Bahrami m.audio91@gmail.com
+  Copyright (C) 2018 Mohammadreza Bahrami m.audio91@gmail.com
 
   This library is free software; you can redistribute it and/or modify it
   under the terms of the GNU Library General Public License as published by

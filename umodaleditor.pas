@@ -5,7 +5,7 @@
   the layout is top to bottom so the creation order matters.
   also see uTimeCodeEdit for an example of a descendant class.
 
-  Copyright (C) 2017 Mohammadreza Bahrami m.audio91@gmail.com
+  Copyright (C) 2018 Mohammadreza Bahrami m.audio91@gmail.com
 
   This library is free software; you can redistribute it and/or modify it
   under the terms of the GNU Library General Public License as published by
