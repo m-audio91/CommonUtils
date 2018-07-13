@@ -1,7 +1,7 @@
 unit CommonStrUtils;
 { Common routines to work with strings.
 
-  Copyright (C) 2017 Mohammadreza Bahrami m.audio91@gmail.com
+  Copyright (C) 2018 Mohammadreza Bahrami m.audio91@gmail.com
 
   This library is free software; you can redistribute it and/or modify it
   under the terms of the GNU Library General Public License as published by
@@ -49,6 +49,7 @@ function NowToString: String;
 function CountAWord(const AWord, AStr: String): Integer;
 function StrForceLength(const AStr: String; ALen: Integer; APadChar: Char;
   PadFromRight: Boolean = False): String;
+function StringIsNumber(const AStr: String): Boolean; inline;
 function CharsAreDigit(const AStr: String; CharIndexes: array of Integer;
   ZeroBasedIndexes: Boolean = False): Boolean;
 function CharsEqual(const AStr: String; AChar: Char; CharIndexes:
@@ -162,6 +163,17 @@ begin
   end
   else if AStr.Length > ALen then
     Result := AStr.Substring(0, ALen);
+end;
+
+function StringIsNumber(const AStr: String): Boolean;
+begin
+  Result := True;
+  if Astr = EmptyStr then Exit(False);
+  try
+    if (AStr.ToDouble*0 = 0) then Exit;
+  except
+    Result := False;
+  end;
 end;
 
 function CharsAreDigit(const AStr: String; CharIndexes: array of Integer;
