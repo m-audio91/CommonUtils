@@ -1,7 +1,7 @@
 unit CommonGUIUtils;
 { Common routines to work with GUI.
 
-  Copyright (C) 2018 Mohammadreza Bahrami m.audio91@gmail.com
+  Copyright (C) 2019 Mohammadreza Bahrami m.audio91@gmail.com
 
   This library is free software; you can redistribute it and/or modify it
   under the terms of the GNU Library General Public License as published by
@@ -35,12 +35,16 @@ interface
 
 uses
   Classes, SysUtils, Forms, LCLType, Graphics, Controls, IntfGraphics, EditBtn,
-  LazCanvas, extinterpolation, FPImage, StdCtrls;
+  LazCanvas, extinterpolation, FPImage, StdCtrls, Menus;
 
 procedure ShowError(const AMsg, ATitle: String);
 function ShowWarnYN(const AMsg, ATitle: String): boolean;
 procedure CopyImageList(AImgList: TImageList; ASourceImageList: TImageList;
   ADPI, ASourceDPI: Word; AMaskColor: TColor);
+procedure SetMenuValues(AMenu: TMainMenu; Values: array of String;
+      AClickEvent: TNotifyEvent); overload;
+procedure SetMenuValues(AMenu: TPopupMenu; Values: array of String;
+      AClickEvent: TNotifyEvent); overload;
 
 implementation
 
@@ -136,6 +140,30 @@ begin
   Canv.Free;
   IntfImg.Free;
   ResizedIntfImg.Free;
+end;
+
+procedure SetMenuValues(AMenu: TMainMenu; Values: array of String;
+  AClickEvent: TNotifyEvent);
+var
+  i: Integer;
+begin
+  i := Length(Values);
+  AMenu.Items.Clear;
+  for i := Low(Values) to High(Values) do
+    AMenu.Items.Add(NewItem(Values[i], 0, False, True, AClickEvent, 0,
+      AMenu.Name+'MI'+i.ToString));
+end;
+
+procedure SetMenuValues(AMenu: TPopupMenu; Values: array of String;
+  AClickEvent: TNotifyEvent);
+var
+  i: Integer;
+begin
+  i := Length(Values);
+  AMenu.Items.Clear;
+  for i := Low(Values) to High(Values) do
+    AMenu.Items.Add(NewItem(Values[i], 0, False, True, AClickEvent, 0,
+      AMenu.Name+'MI'+i.ToString));
 end;
 
 end.
