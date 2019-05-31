@@ -34,8 +34,9 @@ unit CommonGUIUtils;
 interface
 
 uses
-  Classes, SysUtils, Forms, LCLType, Graphics, Controls, IntfGraphics, EditBtn,
-  LazCanvas, extinterpolation, FPImage, StdCtrls, Menus;
+  Classes, SysUtils, Forms, LCLType, Graphics, Controls, ExtCtrls,
+  IntfGraphics, EditBtn, LazCanvas, extinterpolation, FPImage,
+  StdCtrls, Menus, CommonDrawUtils;
 
 procedure ShowError(const AMsg, ATitle: String);
 function ShowWarnYN(const AMsg, ATitle: String): boolean;
@@ -45,6 +46,7 @@ procedure SetMenuValues(AMenu: TMainMenu; Values: array of String;
       AClickEvent: TNotifyEvent); overload;
 procedure SetMenuValues(AMenu: TPopupMenu; Values: array of String;
       AClickEvent: TNotifyEvent); overload;
+function HasDarkBackgroundColor(AControl: TWinControl): Boolean;
 
 implementation
 
@@ -164,6 +166,13 @@ begin
   for i := Low(Values) to High(Values) do
     AMenu.Items.Add(NewItem(Values[i], 0, False, True, AClickEvent, 0,
       AMenu.Name+'MI'+i.ToString));
+end;
+
+function HasDarkBackgroundColor(AControl: TWinControl): Boolean;
+begin
+  Result := False;
+  if LuminanceLevel(AControl.GetRGBColorResolvingParent)<50 then
+    Result := True;
 end;
 
 end.
