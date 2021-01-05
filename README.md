@@ -270,5 +270,24 @@ begin
   end;
 end;  
 ```
-An extended version that has a property called URL is also included. see [FaSubrip](https://github.com/m-audio91/FaSubrip/blob/master/umain.pas)'s FormCreate for example.
+One can also directly use `TCustomUrlLabel` and handle the `OnClick` event to do a custom action.
+```pascal
+
+procedure TProject1.OpenInputFile(Sender: TObject);
+begin
+  ...
+end;
+
+procedure TProject1.FormCreate(Sender: TObject);
+begin
+  FileName := TCustomUrlLabel.Create(TopContainer);
+  with FileName do
+  begin
+    Parent := TopContainer;
+    ...
+    OnClick := @OpenInputFile;
+  end;
+end;
+```
+An extended version that has a property called URL is also included. see [FaSubrip](https://github.com/m-audio91/FaSubrip/blob/master/umain.pas)'s `FormCreate` for example.
 
