@@ -70,6 +70,13 @@ procedure DeleteAllOccurrencesVL(const SubStrStart, SubStrEnd: String;
   var Source: String; IncludeEnd: Boolean = True; const CensorMask: String = '');
 function ReplaceStrings(const S: String; Old, New: array of String): String;
 function NthIndexOf(const ASubStr, AStr: String; N: Integer): Integer;
+function ReplaceFirst(const AStr, SubStr, NewSubStr: String;
+  FromEnd: Boolean = False): String;
+function AddLineEndings(const AStr: String; ACount: Integer = 1;
+  PlusSpaces: Boolean = False; Prepend: Boolean = False): String;
+
+const
+  LineEndings: array[0..2] of String = (#13#10,#13,#10);
 
 implementation
 
@@ -399,6 +406,42 @@ begin
       Inc(i);
     end;
   until i < 0;
+end;
+
+function ReplaceFirst(const AStr, SubStr, NewSubStr: String;
+  FromEnd: Boolean): String;
+var
+  i: Integer;
+begin
+  Result := AStr;
+  if IsEmptyStr(SubStr) then Exit;
+  if FromEnd then
+    i := AStr.LastIndexOf(SubStr)
+  else
+    i := AStr.IndexOf(SubStr);
+  if i > -1 then
+  begin
+    Result := AStr.Remove(i,SubStr.Length);
+    Result := Result.Insert(i,NewSubStr);
+  end;
+end;
+
+function AddLineEndings(const AStr: String; ACount: Integer;
+  PlusSpaces: Boolean; Prepend: Boolean): String;
+var
+  i: Integer;
+begin
+  if ACount < 1 then Exit(AStr);
+  Result := EmptyStr;
+  for i:=0 to ACount-1 do
+    case PlusSpaces of
+    True: Result := Result+LineEnding+' ';
+    False: Result := Result+LineEnding;
+    end;
+  case Prepend of
+  True: Result := Result+AStr;
+  False: Result := AStr+Result;
+  end;
 end;
 
 end.
