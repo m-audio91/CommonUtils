@@ -38,6 +38,7 @@ uses
   IntfGraphics, EditBtn, LazCanvas, extinterpolation, FPImage,
   StdCtrls, Menus, CommonDrawUtils;
 
+procedure CheckDisplayInScreen(aForm: TForm);
 procedure ShowError(const AMsg, ATitle: String);
 function ShowWarnYN(const AMsg, ATitle: String): boolean;
 procedure CopyImageList(AImgList: TImageList; ASourceImageList: TImageList;
@@ -49,6 +50,32 @@ procedure SetMenuValues(AMenu: TPopupMenu; Values: array of String;
 function HasDarkBackgroundColor(AControl: TWinControl): Boolean;
 
 implementation
+
+procedure CheckDisplayInScreen(aForm: TForm);
+begin
+  if not Assigned(aForm) then Exit;
+  with aForm do
+  begin
+    if Top<0 then
+      Top := 0;
+    if Left<0 then
+      Left := 0;
+    if Left+Width > Screen.Width then
+      Left := Left - ((Left+Width)-Screen.Width);
+    if Height>Screen.Height then
+      Height := Screen.Height;
+    if Top+Height>Screen.Height then
+    begin
+      if Height<Screen.Height then
+        Top := Screen.Height-Height
+      else
+      begin
+        Top := 0;
+        Height := Screen.Height;
+      end;
+    end;
+  end;
+end;
 
 procedure ShowError(const AMsg, ATitle: String);
 begin
