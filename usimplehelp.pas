@@ -55,6 +55,10 @@ type
   public
     Index: Integer;
     Childs: TChildsClass;
+    Collapsed: Boolean;
+    procedure Collapse;
+    procedure Expand;
+    constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
@@ -65,6 +69,7 @@ type
     procedure DoShow; override;
   private
     FAllowWrap: Boolean;
+    FAutoCollapse: Boolean;
     FHeader: TPanel;
     FTitle: TLabel;
     FContents: TPanel;
@@ -77,6 +82,7 @@ type
     procedure DoAlignControls;
     procedure OnHeadingClick(Sender: TObject);
     procedure SetAllowWrap(AValue: Boolean);
+    procedure SetAutoCollapse(AValue: Boolean);
     procedure SetBiDiModeContents(AValue: TBiDiMode);
     procedure SetContentSpacing(AValue: Byte);
     procedure ApplyContentSpacing;
@@ -94,7 +100,10 @@ type
     property BiDiModeContents: TBiDiMode write SetBiDiModeContents;
     property ContentSpacing: Byte read FContentSpacing write SetContentSpacing;
     property AllowWrap: Boolean read FAllowWrap write SetAllowWrap;
+    property AutoCollapse: Boolean read FAutoCollapse write SetAutoCollapse;
     procedure Clear;
+    procedure CollapseAll; overload;
+    procedure CollapseAll(aException: TControl); overload;
     procedure AddSection(const aTitle: String);
     procedure Add(const aValue: String; Bold: Boolean = False);
     procedure AddCollapsible(const aTitle, aDescription: String); virtual; overload;
@@ -111,6 +120,30 @@ resourcestring
 implementation
 
 { TCollapsibleHeading }
+
+procedure TCollapsibleHeading.Collapse;
+var
+  i: Integer;
+begin
+  for i:=0 to Childs.Count-1 do
+    Childs.Items[i].Visible := False;
+  Collapsed := True;
+end;
+
+procedure TCollapsibleHeading.Expand;
+var
+  i: Integer;
+begin
+  for i:=0 to Childs.Count-1 do
+    Childs.Items[i].Visible := True; 
+  Collapsed := False;
+end;
+
+constructor TCollapsibleHeading.Create(TheOwner: TComponent);
+begin
+  inherited Create(TheOwner);
+  Collapsed := True;
+end;
 
 destructor TCollapsibleHeading.Destroy;
 begin
@@ -130,6 +163,23 @@ begin
   for i:=FContents.ComponentCount-1 downto 0 do
     FContents.Components[i].Free;
   FContentSpacingApplied := False;
+end;
+
+procedure TSimpleHelp.CollapseAll;
+var
+  i: Integer;
+begin
+  for i:=0 to FHeadings.Count-1 do
+    (FHeadings.Items[i] as TCollapsibleHeading).Collapse;
+end;
+
+procedure TSimpleHelp.CollapseAll(aException: TControl);
+var
+  i: Integer;
+begin
+  for i:=0 to FHeadings.Count-1 do
+    if FHeadings.Items[i]<>aException then
+      (FHeadings.Items[i] as TCollapsibleHeading).Collapse;
 end;
 
 procedure TSimpleHelp.DoShow;
@@ -316,6 +366,7 @@ var
   h: TCollapsibleHeading;
   d: TLabel;
 begin
+  // a collapsible heading without subitems is meaningless. therefore not allowed.
   if IsEmptyStr(aTitle) or IsEmptyStr(aDescription) then Exit;
   h := FindHeading(aTitle);
   if not Assigned(h) then
@@ -338,24 +389,25 @@ var
   d: TControl;
   i: Integer;
 begin
+  if FAutoCollapse then
+    CollapseAll((Sender as TControl));
   h := (Sender as TCollapsibleHeading);
-  for i:=0 to h.Childs.Count-1 do
-  begin
-    d := h.Childs.Items[i];
-    with d do
-    begin
-      if Visible then
-        Visible := False
-      else
-        Visible := True;
-    end;
-  end;
+  if h.Collapsed then
+    h.Expand
+  else
+    h.Collapse;
 end;
 
 procedure TSimpleHelp.SetAllowWrap(AValue: Boolean);
 begin
   if FAllowWrap<>AValue then
     FAllowWrap := AValue;
+end;
+
+procedure TSimpleHelp.SetAutoCollapse(AValue: Boolean);
+begin
+  if FAutoCollapse<>AValue then
+    FAutoCollapse := AValue;
 end;
 
 procedure TSimpleHelp.SetBiDiModeContents(AValue: TBiDiMode);
@@ -417,6 +469,7 @@ begin
   FContentSpacing := 1;
   FContentSpacingApplied := False;
   FAllowWrap := True;
+  FAutoCollapse := True;
   LoadControls;
 end;
 
