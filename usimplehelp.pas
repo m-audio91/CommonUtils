@@ -76,6 +76,7 @@ type
     FContentsContainer: TScrollBox;
     FHeadings: TChildsClass;
     FHeadingColor: TColor;
+    FContentColor: TColor;
     FContentSpacing: Byte;
     FContentSpacingApplied: Boolean;
     procedure LoadControls;
@@ -90,13 +91,18 @@ type
     procedure SetHeaderColor(const aColor: TColor);
     procedure SetTitleColor(const aColor: TColor);
     procedure SetHeadingColor(const aColor: TColor);
+    procedure SetBackgroundColor(const aColor: TColor);
+    procedure SetContentColor(const aColor: TColor);
     function NewHeading(const aTitle: String): TCollapsibleHeading;
     function FindHeading(const aTitle: String): TCollapsibleHeading;
+    function GetHeading(const aTitle: String): TCollapsibleHeading;
   public
     property Title: String write SetTitle;
     property HeaderColor: TColor write SetHeaderColor; 
-    property TitleColor: TColor write SetTitleColor;
+    property TitleColor: TColor write SetTitleColor; 
+    property BackgroundColor: TColor write SetBackgroundColor;
     property HeadingColor: TColor read FHeadingColor write SetHeadingColor;
+    property ContentColor: TColor read FContentColor write SetContentColor;
     property BiDiModeContents: TBiDiMode write SetBiDiModeContents;
     property ContentSpacing: Byte read FContentSpacing write SetContentSpacing;
     property AllowWrap: Boolean read FAllowWrap write SetAllowWrap;
@@ -104,9 +110,13 @@ type
     procedure Clear;
     procedure CollapseAll; overload;
     procedure CollapseAll(aException: TControl); overload;
-    procedure AddSection(const aTitle: String);
-    procedure Add(const aValue: String; Bold: Boolean = False);
-    procedure AddCollapsible(const aTitle, aDescription: String); virtual; overload;
+    procedure AddSection(const aTitle: String); overload;
+    procedure AddSection(const aTitle: String; const aColor: TColor); overload;
+    procedure Add(const aValue: String; Bold: Boolean = False); overload;
+    procedure Add(const aValue: String; const aColor: TColor; Bold: Boolean = False); overload;
+    procedure AddCollapsible(const aTitle, aContent: String); overload; 
+    procedure AddCollapsible(const aTitle: String; const aTitleColor: TColor;
+      const aContent: String; const aContentColor: TColor); overload;
     procedure AddCollapsible(const aTitle: String; aBitmap: TBitmap); virtual; abstract; overload;
     procedure AddImage(aBitmap: TBitmap); virtual; abstract;
     constructor Create(AOwner: TComponent); override;
@@ -203,13 +213,14 @@ begin
   begin
     Caption := rsHelp;
     if HasDarkBackgroundColor(FHeader) then
-      Font.Color := $00FFFFFF
+      Font.Color := clWhite
     else
-      Font.Color := $00000000;
+      Font.Color := clBlack;
     Font.Style:=Font.Style+[fsBold];
   end;
   FContentsContainer := TScrollBox.Create(Self);
   FContents := TPanel.Create(Self);
+  FContents.Color := clWindow;
   FHeadings := TChildsClass.Create(Self);
 end;
 
@@ -295,8 +306,25 @@ begin
     FHeadingColor := aColor;
 end;
 
+procedure TSimpleHelp.SetBackgroundColor(const aColor: TColor);
+begin
+  if aColor<>FContents.Color then
+    FContents.Color := aColor;
+end;  
+
+procedure TSimpleHelp.SetContentColor(const aColor: TColor);
+begin
+  if aColor<>FContentColor then
+    FContentColor := aColor;
+end;
+
 procedure TSimpleHelp.AddSection(const aTitle: String);
-var     
+begin
+  AddSection(aTitle,FContentColor);
+end;
+
+procedure TSimpleHelp.AddSection(const aTitle: String; const aColor: TColor);
+var
   b: TDividerBevel;
   s: TLabel;
 begin
@@ -311,6 +339,7 @@ begin
   begin
     Parent := FContents;
     Caption := aTitle;
+    Font.Color := aColor;
     Font.Style:=Font.Style+[fsBold];
     Alignment := taCenter;
     BorderSpacing.Bottom := 4;
@@ -318,6 +347,12 @@ begin
 end;
 
 procedure TSimpleHelp.Add(const aValue: String; Bold: Boolean = False);
+begin
+  Add(aValue,FContentColor,Bold);
+end;
+
+procedure TSimpleHelp.Add(const aValue: String; const aColor: TColor;
+  Bold: Boolean);
 var
   d: TLabel;
 begin
@@ -327,6 +362,7 @@ begin
   begin
     Parent := FContents;
     Caption := AddLineEndings(aValue,ContentSpacing,True);
+    Font.Color := aColor;
     if FAllowWrap then
       WordWrap := True;
     if Bold then
@@ -342,7 +378,6 @@ begin
     Parent := FContents;
     Index := FContents.GetControlIndex(Result);
     Caption := aTitle;
-    Font.Color := FHeadingColor;
     Font.Style:=Font.Style+[fsBold];
     ParentBiDiMode := True;
     Childs := TChildsClass.Create(Result);
@@ -361,27 +396,41 @@ begin
       Exit((FHeadings.Items[i] as TCollapsibleHeading));
 end;
 
-procedure TSimpleHelp.AddCollapsible(const aTitle,aDescription: String);
+function TSimpleHelp.GetHeading(const aTitle: String): TCollapsibleHeading;
+begin
+  Result := FindHeading(aTitle);
+  if not Assigned(Result) then
+    Result := NewHeading(aTitle);
+end;
+
+procedure TSimpleHelp.AddCollapsible(const aTitle,aContent: String);
+begin
+  AddCollapsible(aTitle,FHeadingColor,aContent,FContentColor);
+end;
+
+procedure TSimpleHelp.AddCollapsible(const aTitle: String;
+  const aTitleColor: TColor; const aContent: String;
+  const aContentColor: TColor);
 var
   h: TCollapsibleHeading;
   d: TLabel;
 begin
-  // a collapsible heading without subitems is meaningless. therefore not allowed.
-  if IsEmptyStr(aTitle) or IsEmptyStr(aDescription) then Exit;
-  h := FindHeading(aTitle);
-  if not Assigned(h) then
-    h := NewHeading(aTitle);
+  // a collapsible heading without subitems is meaningless and not allowed.
+  if IsEmptyStr(aTitle) or IsEmptyStr(aContent) then Exit;
+  h := GetHeading(aTitle);
+  h.Font.Color := aTitleColor;
   d := TLabel.Create(FContents);
   with d do
   begin
     FContents.InsertControl(d,h.Index+h.Childs.Count+1);
-    Caption := aDescription;
+    Caption := aContent;
+    Font.Color := aContentColor;
     if FAllowWrap then
       WordWrap := True;
     Visible := False;
   end;
   h.Childs.Add(d);
-end;  
+end;
 
 procedure TSimpleHelp.OnHeadingClick(Sender: TObject);
 var
@@ -466,6 +515,7 @@ begin
     Caption := rsHelp;
   end;
   FHeadingColor := clHighlight;
+  FContentColor := clWindowText;
   FContentSpacing := 1;
   FContentSpacingApplied := False;
   FAllowWrap := True;
