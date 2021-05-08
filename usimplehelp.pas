@@ -226,7 +226,7 @@ end;
 
 procedure TSimpleHelp.DoAlignControls;
 var
-  i: Integer;
+  sb: TControlScrollBar;
 begin
   with FHeader do
   begin
@@ -246,11 +246,9 @@ begin
     Parent := Self;
     Align := alClient;
     BorderStyle := bsNone;
-    if FAllowWrap then
-      HorzScrollBar.Visible := False
-    else
+    for sb in [HorzScrollBar,VertScrollBar] do
     begin
-      with HorzScrollBar do
+      with sb do
       begin
         Increment := 4;
         Smooth := True;
@@ -258,13 +256,8 @@ begin
         Position := 0;
       end;
     end;
-    with VertScrollBar do
-    begin
-      Increment := 4;
-      Smooth := True;
-      Tracking := True;
-      Position := 0;
-    end;
+    if FAllowWrap then
+      HorzScrollBar.Visible := False
   end;
   with FContents do
   begin 
@@ -435,8 +428,6 @@ end;
 procedure TSimpleHelp.OnHeadingClick(Sender: TObject);
 var
   h: TCollapsibleHeading;
-  d: TControl;
-  i: Integer;
 begin
   if FAutoCollapse then
     CollapseAll((Sender as TControl));
