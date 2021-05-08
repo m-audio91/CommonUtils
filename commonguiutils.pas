@@ -49,6 +49,9 @@ procedure SetMenuValues(AMenu: TPopupMenu; Values: array of String;
       AClickEvent: TNotifyEvent); overload;
 function HasDarkBackgroundColor(AControl: TWinControl): Boolean;
 
+const
+  MenuSep='-';
+
 implementation
 
 procedure CheckDisplayInScreen(aForm: TForm);
