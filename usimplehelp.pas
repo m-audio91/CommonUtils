@@ -218,7 +218,8 @@ begin
       Font.Color := clBlack;
     Font.Style:=Font.Style+[fsBold];
   end;
-  FContentsContainer := TScrollBox.Create(Self);
+  FContentsContainer := TScrollBox.Create(Self); 
+  FContentsContainer.Color := clWindow;
   FContents := TPanel.Create(Self);
   FContents.Color := clWindow;
   FHeadings := TChildsClass.Create(Self);
@@ -302,8 +303,11 @@ end;
 procedure TSimpleHelp.SetBackgroundColor(const aColor: TColor);
 begin
   if aColor<>FContents.Color then
+  begin
+    FContentsContainer.Color := aColor;
     FContents.Color := aColor;
-end;  
+  end;
+end;
 
 procedure TSimpleHelp.SetContentColor(const aColor: TColor);
 begin
