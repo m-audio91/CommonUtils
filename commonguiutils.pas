@@ -35,8 +35,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, LCLType, Graphics, Controls, ExtCtrls,
-  IntfGraphics, EditBtn, LazCanvas, extinterpolation, FPImage,
-  StdCtrls, Menus, CommonDrawUtils;
+  IntfGraphics, LazCanvas, extinterpolation, FPImage,
+  Menus, CommonDrawUtils;
 
 procedure CheckDisplayInScreen(aForm: TForm);
 procedure ShowError(const AMsg, ATitle: String);
