@@ -48,6 +48,7 @@ procedure SetMenuValues(AMenu: TMainMenu; Values: array of String;
 procedure SetMenuValues(AMenu: TPopupMenu; Values: array of String;
       AClickEvent: TNotifyEvent); overload;
 function HasDarkBackgroundColor(AControl: TWinControl): Boolean;
+function DefaultMacOSMenu(AForm: TForm): TMainMenu;
 
 const
   MenuSep='-';
@@ -203,6 +204,21 @@ begin
   Result := False;
   if LuminanceLevel(AControl.GetRGBColorResolvingParent)<50 then
     Result := True;
+end;
+
+function DefaultMacOSMenu(AForm: TForm): TMainMenu;
+{$ifdef darwin}
+var
+  AppMenu: TMenuItem;
+{$endif}
+begin
+  {$ifdef darwin}
+    Result := TMainMenu.Create(AForm);
+    Result.Parent := AForm;
+    AppMenu:=TMenuItem.Create(AForm);
+    AppMenu.Caption:=#$EF#$A3#$BF;
+    Result.Items.Insert(0, AppMenu);
+  {$endif}
 end;
 
 end.
