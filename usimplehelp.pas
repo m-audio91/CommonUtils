@@ -68,6 +68,8 @@ type
   protected
     procedure DoShow; override;
   private
+    FAllowBreak: Boolean; 
+    FMaxLineLength: Byte;
     FAllowWrap: Boolean;
     FAutoCollapse: Boolean;
     FHeader: TPanel;
@@ -82,11 +84,13 @@ type
     procedure LoadControls;
     procedure DoAlignControls;
     procedure OnHeadingClick(Sender: TObject);
+    procedure SetAllowBreak(AValue: Boolean);
     procedure SetAllowWrap(AValue: Boolean);
     procedure SetAutoCollapse(AValue: Boolean);
     procedure SetBiDiModeContents(AValue: TBiDiMode);
     procedure SetContentSpacing(AValue: Byte);
     procedure ApplyContentSpacing;
+    procedure SetMaxLineLength(AValue: Byte);
     procedure SetTitle(const aTitle: String);
     procedure SetHeaderColor(const aColor: TColor);
     procedure SetTitleColor(const aColor: TColor);
@@ -106,6 +110,8 @@ type
     property BiDiModeContents: TBiDiMode write SetBiDiModeContents;
     property ContentSpacing: Byte read FContentSpacing write SetContentSpacing;
     property AllowWrap: Boolean read FAllowWrap write SetAllowWrap;
+    property AllowBreak: Boolean read FAllowBreak write SetAllowBreak; 
+    property MaxLineLength: Byte read FMaxLineLength write SetMaxLineLength;
     property AutoCollapse: Boolean read FAutoCollapse write SetAutoCollapse;
     procedure Clear;
     procedure CollapseAll; overload;
@@ -358,7 +364,10 @@ begin
   with d do
   begin
     Parent := FContents;
-    Caption := AddLineEndings(aValue,ContentSpacing,True);
+    if FAllowBreak then
+      Caption := AddLineEndings(WrapText(aValue,FMaxLineLength),ContentSpacing,True)
+    else
+      Caption := AddLineEndings(aValue,ContentSpacing,True);
     Font.Color := aColor;
     if FAllowWrap then
       WordWrap := True;
@@ -420,7 +429,10 @@ begin
   with d do
   begin
     FContents.InsertControl(d,h.Index+h.Childs.Count+1);
-    Caption := aContent;
+    if FAllowBreak then
+      Caption := WrapText(aContent,FMaxLineLength)
+    else
+      Caption := aContent;
     Font.Color := aContentColor;
     if FAllowWrap then
       WordWrap := True;
@@ -442,10 +454,28 @@ begin
     h.Collapse;
 end;
 
+procedure TSimpleHelp.SetAllowBreak(AValue: Boolean);
+begin
+  if FAllowBreak<>AValue then
+  begin
+    FAllowBreak := AValue;
+    FAllowWrap := False;
+  end;
+end;
+
+procedure TSimpleHelp.SetMaxLineLength(AValue: Byte);
+begin
+  if (FMaxLineLength<>AValue) and (AValue>40) then
+    FMaxLineLength := AValue;
+end;
+
 procedure TSimpleHelp.SetAllowWrap(AValue: Boolean);
 begin
   if FAllowWrap<>AValue then
+  begin
     FAllowWrap := AValue;
+    FAllowBreak := False;
+  end;
 end;
 
 procedure TSimpleHelp.SetAutoCollapse(AValue: Boolean);
@@ -514,6 +544,8 @@ begin
   FContentSpacing := 1;
   FContentSpacingApplied := False;
   FAllowWrap := True;
+  FAllowBreak := False;
+  FMaxLineLength := 80;
   FAutoCollapse := True;
   LoadControls;
 end;
