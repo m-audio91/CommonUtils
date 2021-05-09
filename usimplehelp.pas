@@ -452,6 +452,8 @@ begin
     h.Expand
   else
     h.Collapse;
+  if not h.Collapsed then
+    FContentsContainer.ScrollInView(h.Childs.Items[0]);
 end;
 
 procedure TSimpleHelp.SetAllowBreak(AValue: Boolean);
