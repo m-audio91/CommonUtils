@@ -35,7 +35,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, LCLType, Graphics, Controls, ExtCtrls,
-  IntfGraphics, LazCanvas, extinterpolation, FPImage,
+  IntfGraphics, LazCanvas, extinterpolation, FPImage, Math,
   Menus, CommonDrawUtils;
 
 procedure CheckDisplayInScreen(aForm: TForm);
@@ -64,19 +64,22 @@ begin
       Top := 0;
     if Left<0 then
       Left := 0;
-    if Left+Width > Screen.Width then
-      Left := Left - ((Left+Width)-Screen.Width);
+    if Width>Screen.Width then
+    begin
+      Constraints.MinWidth := Min(Constraints.MinWidth,Screen.Width);
+      Width := Screen.Width;
+    end;
+    if Left+Width>=Screen.Width then
+      Left := Screen.Width-Width;
     if Height>Screen.Height then
+    begin
+      Constraints.MinHeight := Min(Constraints.MinHeight,Screen.Height);
       Height := Screen.Height;
+    end;
     if Top+Height>Screen.Height then
     begin
-      if Height<Screen.Height then
-        Top := Screen.Height-Height
-      else
-      begin
-        Top := 0;
-        Height := Screen.Height;
-      end;
+      if Height<=Screen.Height then
+        Top := Screen.Height-Height;
     end;
   end;
 end;
