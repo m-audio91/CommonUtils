@@ -56,31 +56,36 @@ const
 implementation
 
 procedure CheckDisplayInScreen(aForm: TForm);
+var
+  t,l,w,h: Integer;
 begin
   if not Assigned(aForm) then Exit;
   with aForm do
   begin
-    if Top<0 then
-      Top := 0;
-    if Left<0 then
-      Left := 0;
-    if Width>Screen.Width then
+    t:= Top;
+    l:= Left;
+    w:= Width;
+    h:= Height;
+
+    if t<0 then
+      t := 0;
+    if l<0 then
+      l := 0;
+    if w>Screen.Width then
     begin
       Constraints.MinWidth := Min(Constraints.MinWidth,Screen.Width);
-      Width := Screen.Width;
+      w := Screen.Width;
     end;
-    if Left+Width>=Screen.Width then
-      Left := Screen.Width-Width;
-    if Height>Screen.Height then
+    if l+w>=Screen.Width then
+      l := Screen.Width-w;
+    if h>Screen.Height then
     begin
       Constraints.MinHeight := Min(Constraints.MinHeight,Screen.Height);
-      Height := Screen.Height;
+      h := Screen.Height;
     end;
-    if Top+Height>Screen.Height then
-    begin
-      if Height<=Screen.Height then
-        Top := Screen.Height-Height;
-    end;
+    if t+h>Screen.Height then
+      t := Screen.Height-h;
+    SetBounds(l,t,w,h);
   end;
 end;
 
