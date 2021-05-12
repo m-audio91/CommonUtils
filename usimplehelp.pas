@@ -529,6 +529,8 @@ constructor TSimpleHelp.CreateNew(AOwner: TComponent; Num: Integer);
 begin
   inherited CreateNew(AOwner, Num);  
   DefaultMonitor := dmActiveForm;
+  Constraints.MinWidth := 100;
+  Constraints.MinHeight := 100;
   if AOwner is TForm then
   begin
     Position := poOwnerFormCenter;
