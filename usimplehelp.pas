@@ -545,8 +545,8 @@ begin
   FContentColor := clWindowText;
   FContentSpacing := 1;
   FContentSpacingApplied := False;
-  FAllowWrap := True;
-  FAllowBreak := False;
+  FAllowWrap := False;
+  FAllowBreak := True;
   FMaxLineLength := 80;
   FAutoCollapse := True;
   LoadControls;
