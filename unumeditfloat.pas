@@ -42,17 +42,28 @@ type
 
   TNumEditFloat = class (TModalEditor)
   private
-    FHeaderText: String;
-    FValue: Double;
-    FDecimalPlaces: Word;
     FHeaderTextL: TLabel;
     FValueEdit: TFloatSpinEdit;
+    function GetDecimalPlaces: Integer;
+    function GetHeaderText: String;
+    function GetIncrement: Double;
+    function GetMaxValue: Double;
+    function GetMinValue: Double;
+    function GetValue: Double;
     procedure LoadControls(Sender: TObject);
-    procedure OnClosing(Sender: TObject; var CanClose: Boolean);
+    procedure SetDecimalPlaces(AValue: Integer);
+    procedure SetHeaderText(AValue: String);
+    procedure SetIncrement(AValue: Double);
+    procedure SetMaxValue(AValue: Double);
+    procedure SetMinValue(AValue: Double);
+    procedure SetValue(AValue: Double);
   public
-    property DecimalPlaces: Word read FDecimalPlaces write FDecimalPlaces;
-    property Value: Double read FValue write FValue;
-    property HeaderText: String read FHeaderText write FHeaderText;
+    property Value: Double read GetValue write SetValue;
+    property DecimalPlaces: Integer read GetDecimalPlaces write SetDecimalPlaces;
+    property MinValue: Double read GetMinValue write SetMinValue;
+    property MaxValue: Double read GetMaxValue write SetMaxValue;
+    property Increment: Double read GetIncrement write SetIncrement;
+    property HeaderText: String read GetHeaderText write SetHeaderText;
     constructor CreateNew(AOwner: TComponent; Num: Integer); override;
   end;
 
@@ -63,35 +74,86 @@ implementation
 procedure TNumEditFloat.LoadControls(Sender: TObject);
 begin
   //FHeaderTextL
-  FHeaderTextL := TLabel.Create(Self);
   with FHeaderTextL do
   begin
     Parent := Self;
-    Caption := FHeaderText;
     Alignment := taCenter;
     BorderSpacing.Bottom := 10;
   end;
 
   //FValueEdit
-  FValueEdit := TFloatSpinEdit.Create(Self);
   with FValueEdit do
   begin
     Parent := Self;
-    MinValue := MinValue.MinValue;
-    MaxValue := MaxValue.MaxValue;
-    DecimalPlaces := FDecimalPlaces;
     Alignment := taCenter;
-    Increment := 1;
-    if Canvas.TextWidth(FHeaderText) < 50 then
-      Constraints.MinWidth := Trunc(Width*1.5);
-    Value := FValue;
+    Constraints.MinWidth := 250;
   end;
 end;
 
-procedure TNumEditFloat.OnClosing(Sender: TObject; var CanClose: Boolean);
+function TNumEditFloat.GetHeaderText: String;
 begin
-  FValue := FValueEdit.Value;
-  CanClose := True;
+  Result := FHeaderTextL.Caption;
+end;
+
+procedure TNumEditFloat.SetHeaderText(AValue: String);
+begin
+  if FHeaderTextL.Caption<>AValue then
+    FHeaderTextL.Caption := AValue;
+end;
+
+function TNumEditFloat.GetValue: Double;
+begin
+  Result := FValueEdit.Value;
+end;
+
+procedure TNumEditFloat.SetValue(AValue: Double);
+begin
+  if FValueEdit.Value<>AValue then
+    FValueEdit.Value := AValue;
+end;
+
+function TNumEditFloat.GetDecimalPlaces: Integer;
+begin
+  Result := FValueEdit.DecimalPlaces;
+end;
+
+procedure TNumEditFloat.SetDecimalPlaces(AValue: Integer);
+begin
+  if FValueEdit.DecimalPlaces<>AValue then
+    FValueEdit.DecimalPlaces := AValue;
+end;
+
+function TNumEditFloat.GetMinValue: Double;
+begin
+  Result := FValueEdit.MinValue;
+end;
+
+procedure TNumEditFloat.SetMinValue(AValue: Double);
+begin
+  if FValueEdit.MinValue<>AValue then
+    FValueEdit.MinValue := AValue;
+end;
+
+function TNumEditFloat.GetMaxValue: Double;
+begin
+  Result := FValueEdit.MaxValue;
+end;
+
+procedure TNumEditFloat.SetMaxValue(AValue: Double);
+begin
+  if FValueEdit.MaxValue<>AValue then
+    FValueEdit.MaxValue := AValue;
+end;
+
+function TNumEditFloat.GetIncrement: Double;
+begin
+  Result := FValueEdit.Increment;
+end;
+
+procedure TNumEditFloat.SetIncrement(AValue: Double);
+begin
+  if FValueEdit.Increment<>AValue then
+    FValueEdit.Increment := AValue;
 end;
 
 constructor TNumEditFloat.CreateNew(AOwner: TComponent; Num: Integer);
@@ -99,11 +161,13 @@ begin
   //Self
   inherited CreateNew(AOwner, Num);
   OnShow := @LoadControls;
-  OnCloseQuery := @OnClosing;
+  FHeaderTextL := TLabel.Create(Self);
+  FHeaderTextL.Caption := EmptyStr;
 
-  FHeaderText := EmptyStr;
-  FValue := 0;
-  FDecimalPlaces := 2;
+  FValueEdit := TFloatSpinEdit.Create(Self); 
+  FValueEdit.MinValue := MinValue.MinValue;
+  FValueEdit.MaxValue := MaxValue.MaxValue;
+  FValueEdit.Increment := 1;
 end;
 
 end.
