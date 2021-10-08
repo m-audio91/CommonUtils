@@ -158,8 +158,9 @@ begin
   end;
 end;
 
-procedure TTimeSlice.Initialize(MillisecondPrecision: Word; MajorSep, MinorSep
-  : Char; const SliceSep: String; SourceFPS: Double; HasFrame, IsFrame: Boolean);
+procedure TTimeSlice.Initialize(MillisecondPrecision: Word; MajorSep: Char;
+  MinorSep: Char; const SliceSep: String; SourceFPS: Double; HasFrame: Boolean;
+  IsFrame: Boolean);
 begin
   FFormatSettings.TimeCodes.MillisecondPrecision := MillisecondPrecision;
   FFormatSettings.TimeCodes.MajorSep := MajorSep;
@@ -268,8 +269,13 @@ end;
 function TTimeSlice.GetDelayedTimeSlice: TBasicTimeSlice;
 begin
   Result := Default(TBasicTimeSlice);
-  Result.StartPos.Value := FValue.StartPos.ValueWithDelay;
-  Result.EndPos.Value := FValue.EndPos.ValueWithDelay;
+  with Result do
+  begin
+    StartPos.Initialize(FFormatSettings.TimeCodes);
+    StartPos.Value := FValue.StartPos.ValueWithDelay;
+    EndPos.Initialize(FFormatSettings.TimeCodes);
+    EndPos.Value := FValue.EndPos.ValueWithDelay;
+  end;
 end;
 
 { TTimeSliceList }
