@@ -537,6 +537,8 @@ begin
     Caption := (AOwner as TForm).Caption+' - '+rsHelp;
     Width := (AOwner as TForm).Width;
     Height := (AOwner as TForm).Height;
+    if Height < (Width/2) then
+       Height := Height*2;
   end
   else
   begin
